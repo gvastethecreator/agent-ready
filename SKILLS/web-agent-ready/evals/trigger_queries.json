@@ -1,0 +1,66 @@
+[
+  {
+    "query": "Make this web app agent-ready for Chrome browser agents.",
+    "should_trigger": true
+  },
+  {
+    "query": "Add WebMCP tools so an in-page agent can filter results without clicking around the DOM.",
+    "should_trigger": true
+  },
+  {
+    "query": "Register document.modelContext tools on the booking page with JSON Schema inputs.",
+    "should_trigger": true
+  },
+  {
+    "query": "Annotate our HTML checkout form with toolname and tooldescription for WebMCP.",
+    "should_trigger": true
+  },
+  {
+    "query": "Expose in-page MCP tools from this SPA using the WebMCP standard, not a backend MCP server.",
+    "should_trigger": true
+  },
+  {
+    "query": "Enable chrome://flags/#enable-webmcp-testing and wire registerTool for search and add-to-cart.",
+    "should_trigger": true
+  },
+  {
+    "query": "Add webmcp-types and abort WebMCP tools when the React view unmounts.",
+    "should_trigger": true
+  },
+  {
+    "query": "Let a browser agent fill the reservation form and leave submit for the user.",
+    "should_trigger": true
+  },
+  {
+    "query": "Write AGENTS.md and a project skill so coding agents know how to run our test suite.",
+    "should_trigger": false
+  },
+  {
+    "query": "Add llms.txt and improve AI Overview citations for this marketing site.",
+    "should_trigger": false
+  },
+  {
+    "query": "Audit whether VITE_GEMINI_API_KEY leaks into the production bundle.",
+    "should_trigger": false
+  },
+  {
+    "query": "Configure GitHub Issues, a linked Project, and .scratch mirrors for this repo.",
+    "should_trigger": false
+  },
+  {
+    "query": "Stand up a Cloudflare Agent with RPC and Durable Objects. No browser UI.",
+    "should_trigger": false
+  },
+  {
+    "query": "Fix keyboard focus order and missing labels on this settings form.",
+    "should_trigger": false
+  },
+  {
+    "query": "Bump Vite and run the existing unit tests. Do not add agent APIs.",
+    "should_trigger": false
+  },
+  {
+    "query": "Create an HTTP MCP server for our public REST API with stdio transport.",
+    "should_trigger": false
+  }
+]

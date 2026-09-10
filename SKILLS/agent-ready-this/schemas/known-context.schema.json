@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/agent-ready-this/known-context.schema.json",
+  "title": "Agent Ready This known context",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "known_topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "question_id",
+          "status",
+          "source"
+        ],
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "pattern": "^G-[0-9]{2}$"
+          },
+          "status": {
+            "enum": [
+              "answered",
+              "defaulted",
+              "deferred"
+            ]
+          },
+          "value": {},
+          "source": {
+            "enum": [
+              "repository-evidence",
+              "explicit-user-answer",
+              "prior-user-context",
+              "inferred-from-evidence",
+              "safe-default",
+              "deferred"
+            ]
+          },
+          "confidence": {
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ]
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

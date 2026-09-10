@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "last_verified": "2026-09-04",
+  "note": "This is an internal registry for the skill, not an external standard.",
+  "capabilities": [
+    {
+      "id": "agents-md",
+      "label": "AGENTS.md",
+      "category": "development-instructions",
+      "maturity": "recommended-open-format",
+      "default_policy": "required-for-code-repos",
+      "source": "https://agents.md/"
+    },
+    {
+      "id": "agent-skills",
+      "label": "Agent Skills",
+      "category": "development-workflows",
+      "maturity": "open-specification",
+      "default_policy": "conditional",
+      "source": "https://agentskills.io/specification"
+    },
+    {
+      "id": "llms-txt",
+      "label": "llms.txt v2",
+      "category": "web-discovery",
+      "maturity": "proposal",
+      "default_policy": "conditional-public-web",
+      "source": "https://llmstxt.org/"
+    },
+    {
+      "id": "openapi",
+      "label": "OpenAPI",
+      "category": "api-contract",
+      "maturity": "published-specification",
+      "default_policy": "conditional-http-api",
+      "source": "https://spec.openapis.org/"
+    },
+    {
+      "id": "webmcp",
+      "label": "WebMCP",
+      "category": "page-runtime",
+      "maturity": "proposed-origin-trial",
+      "default_policy": "report-only-unless-explicit",
+      "source": "https://developer.chrome.com/docs/ai/webmcp"
+    },
+    {
+      "id": "mcp",
+      "label": "Model Context Protocol",
+      "category": "tool-runtime",
+      "maturity": "open-protocol",
+      "protocol_version": "2026-07-28",
+      "default_policy": "conditional",
+      "source": "https://modelcontextprotocol.io/specification/2026-07-28"
+    },
+    {
+      "id": "mcp-apps",
+      "label": "MCP Apps",
+      "category": "tool-ui",
+      "maturity": "open-standard-extension",
+      "default_policy": "conditional-after-mcp",
+      "source": "https://developers.openai.com/plugins/build/chatgpt-ui"
+    },
+    {
+      "id": "a2a",
+      "label": "Agent2Agent Protocol",
+      "category": "agent-interoperability",
+      "maturity": "released-standard",
+      "protocol_version": "1.0.0",
+      "default_policy": "not-applicable-unless-agent-service",
+      "source": "https://a2a-protocol.org/latest/specification/"
+    },
+    {
+      "id": "ard",
+      "label": "Agentic Resource Discovery",
+      "category": "public-discovery",
+      "maturity": "emerging-open-specification",
+      "default_policy": "report-only-unless-explicit",
+      "source": "https://developers.googleblog.com/announcing-the-agentic-resource-discovery-specification/"
+    }
+  ]
+}

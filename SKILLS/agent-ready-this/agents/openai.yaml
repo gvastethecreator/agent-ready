@@ -1,0 +1,6 @@
+interface:
+  display_name: "Agent Ready This"
+  short_description: "Audit and improve project readiness for agents"
+  default_prompt: "Use $agent-ready-this to assess this project from repository evidence and complete the requested readiness work. Ask only for material missing decisions, reuse existing authorization, and report what the checks actually prove."
+policy:
+  allow_implicit_invocation: true

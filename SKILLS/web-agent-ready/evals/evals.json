@@ -1,0 +1,50 @@
+{
+  "skill_name": "web-agent-ready",
+  "evals": [
+    {
+      "id": "spa-filter-tool",
+      "prompt": "This React shop should let a Chrome agent filter dresses by size and occasion using in-page tools, not DOM scraping. Keep checkout as a human confirm step.",
+      "expected_output": "Feature-detected document.modelContext tools registered on the shop view, aborted on leave, JSON schemas for filter/show, and checkout left human-gated without toolautosubmit.",
+      "files": [],
+      "assertions": [
+        "Uses feature-detected native registration with view cleanup and a separate execution cancellation policy; no production polyfill.",
+        "Tools reuse existing client filter/render logic and return JSON-serializable ids or counts.",
+        "Purchase or place-order is not silently executed from a tool.",
+        "Unsupported browsers still shop through the existing UI.",
+        "Checks the target browser contract before choosing executeTool arguments; does not probe alternate signatures by retrying mutations."
+      ]
+    },
+    {
+      "id": "declarative-search-form",
+      "prompt": "Annotate our existing flight search form so a browser agent can fill origin, destination, and date. Do not auto-submit.",
+      "expected_output": "toolname, tooldescription, and toolparamdescription on the real form; no toolautosubmit; confirm-submit UX preserved.",
+      "files": [],
+      "assertions": [
+        "The form remains a native HTML form with named fields.",
+        "toolautosubmit is omitted because the user asked not to auto-submit.",
+        "Field descriptions live on toolparamdescription, not a parallel agent-only tree."
+      ]
+    },
+    {
+      "id": "refuse-agents-md-as-webmcp",
+      "prompt": "Make this repo agent-ready: write AGENTS.md and a project skill for how coding agents should run tests.",
+      "expected_output": "Handle the requested coding-agent guidance with agent-ready-this when available, without adding in-page WebMCP tools.",
+      "files": [],
+      "assertions": [
+        "The result classifies the job as coding-agent rules, not an in-page WebMCP surface.",
+        "The result does not register browser tools for running unit tests."
+      ]
+    },
+    {
+      "id": "native-unavailable",
+      "prompt": "Audit the lifecycle of these page tools. Native WebMCP is unavailable here, but component tests can run.",
+      "expected_output": "A scoped lifecycle audit with tests where useful and an explicit native-execution gap.",
+      "files": [],
+      "assertions": [
+        "Does not call successful feature detection or a test mock native verification.",
+        "Distinguishes unregistration from cancellation of pending execution.",
+        "Does not install a production polyfill or change browser flags to manufacture proof."
+      ]
+    }
+  ]
+}

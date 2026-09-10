@@ -1,0 +1,6 @@
+interface:
+  display_name: "Web Agent-Ready"
+  short_description: "Expose a live web app to browser agents via WebMCP"
+  default_prompt: "Use $web-agent-ready to make this web product callable by browser agents with WebMCP tools, keeping the human UI primary."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/agent-ready-this/grill-session.schema.json",
+  "title": "Agent Ready This Grill Session",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_audit",
+    "source_recommendations",
+    "gate",
+    "questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "generator": {
+      "type": "string"
+    },
+    "source_audit": {
+      "type": "string"
+    },
+    "source_recommendations": {
+      "type": "string"
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "depth",
+        "materiality_score",
+        "reasons",
+        "blocking_question_ids"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "skipped",
+            "useful",
+            "required",
+            "completed"
+          ]
+        },
+        "depth": {
+          "enum": [
+            "none",
+            "light",
+            "standard",
+            "deep"
+          ]
+        },
+        "materiality_score": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blocking_question_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "safe_work_can_proceed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/question"
+      }
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/answer"
+      }
+    },
+    "suppressed_topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "next_round": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "consequence": {
+          "type": "string"
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "round",
+        "topic",
+        "category",
+        "severity",
+        "materiality",
+        "finding",
+        "question",
+        "why_it_matters",
+        "current_recommendation",
+        "safe_default",
+        "affects",
+        "options"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^G-[0-9]{2}$"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "topic": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "blocking",
+            "major",
+            "minor"
+          ]
+        },
+        "materiality": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "finding": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "question": {
+          "type": "string"
+        },
+        "why_it_matters": {
+          "type": "string"
+        },
+        "current_recommendation": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/option"
+          },
+          "minItems": 0,
+          "maxItems": 4
+        },
+        "safe_default": {
+          "type": "string"
+        },
+        "affects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "answered",
+            "suppressed",
+            "defaulted",
+            "deferred"
+          ]
+        }
+      }
+    },
+    "answer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "question_id",
+        "status",
+        "source"
+      ],
+      "properties": {
+        "question_id": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "answered",
+            "defaulted",
+            "deferred"
+          ]
+        },
+        "value": {},
+        "source": {
+          "enum": [
+            "repository-evidence",
+            "explicit-user-answer",
+            "prior-user-context",
+            "inferred-from-evidence",
+            "safe-default",
+            "deferred"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

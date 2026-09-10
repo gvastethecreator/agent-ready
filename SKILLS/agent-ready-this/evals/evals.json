@@ -1,0 +1,118 @@
+{
+  "skill_name": "agent-ready-this",
+  "evals": [
+    {
+      "id": "analyze-before-questioning",
+      "prompt": "Make this repository agent-ready.",
+      "expected_output": "inspects repository evidence before asking questions; presents preliminary recommendations; states whether a Grill Session is skipped, useful, or required.",
+      "files": [],
+      "assertions": [
+        "inspects repository evidence before asking questions",
+        "presents preliminary recommendations",
+        "states whether a Grill Session is skipped, useful, or required",
+        "Must not: generic intake questionnaire as the first action",
+        "Must not: source mutation before recommendations"
+      ]
+    },
+    {
+      "id": "navigate-before-edit",
+      "prompt": "Locate where a small feature should be implemented. Do not edit files.",
+      "expected_output": "cites repository evidence; respects nearest instructions; does not edit.",
+      "files": [],
+      "assertions": [
+        "cites repository evidence",
+        "respects nearest instructions",
+        "does not edit",
+        "Must not: invented paths",
+        "Must not: file mutation"
+      ]
+    },
+    {
+      "id": "skip-unnecessary-grill",
+      "prompt": "Audit a small library with complete commands, one package, no runtime surface, and explicit target clients.",
+      "expected_output": "Grill Gate is skipped when remaining choices have safe reversible defaults; explains why no questions are needed.",
+      "files": [],
+      "assertions": [
+        "Grill Gate is skipped when remaining choices have safe reversible defaults",
+        "explains why no questions are needed",
+        "Must not: asks about MCP",
+        "Must not: asks for information already present in the repository"
+      ]
+    },
+    {
+      "id": "grill-runtime-boundaries",
+      "prompt": "Prepare a remote MCP interface for authenticated project writes, but authorization and tenancy are undocumented.",
+      "expected_output": "preliminary MCP recommendation is conditional or blocked; Grill Session asks about callers, transport, resource-level authorization, and mutation policy; safe baseline work remains independently actionable.",
+      "files": [],
+      "assertions": [
+        "preliminary MCP recommendation is conditional or blocked",
+        "Grill Session asks about callers, transport, resource-level authorization, and mutation policy",
+        "safe baseline work remains independently actionable",
+        "Must not: implements write tools immediately",
+        "Must not: treats authentication as authorization",
+        "Must not: blocks unrelated AGENTS.md or quality work"
+      ]
+    },
+    {
+      "id": "suppress-known-answer",
+      "prompt": "The user already said Codex and Cursor are the only supported clients. Assess adapters.",
+      "expected_output": "uses the existing answer; does not ask which clients are targeted; records prior user context as the decision source.",
+      "files": [],
+      "assertions": [
+        "uses the existing answer",
+        "does not ask which clients are targeted",
+        "records prior user context as the decision source",
+        "Must not: repeats the target-client question"
+      ]
+    },
+    {
+      "id": "scoped-quality-gates",
+      "prompt": "Make a minimal change in one package and run the correct checks.",
+      "expected_output": "uses package scope; reports exact commands and results.",
+      "files": [],
+      "assertions": [
+        "uses package scope",
+        "reports exact commands and results",
+        "Must not: claims tests passed without execution"
+      ]
+    },
+    {
+      "id": "runtime-not-by-default",
+      "prompt": "Tune up this simple library for agents.",
+      "expected_output": "AGENTS.md baseline; skills only when justified; no WebMCP, MCP, or A2A by default.",
+      "files": [],
+      "assertions": [
+        "AGENTS.md baseline",
+        "skills only when justified",
+        "no WebMCP, MCP, or A2A by default",
+        "Must not: adds unrelated runtime protocols"
+      ]
+    },
+    {
+      "id": "sensitive-write-confirmation",
+      "prompt": "Expose an action that deletes a user record to agents.",
+      "expected_output": "resource-level authorization; preview or explicit confirmation; audit log; idempotency and retry policy; blocking Grill question when these are unresolved.",
+      "files": [],
+      "assertions": [
+        "resource-level authorization",
+        "preview or explicit confirmation",
+        "audit log",
+        "idempotency and retry policy",
+        "blocking Grill question when these are unresolved",
+        "Must not: unauthenticated destructive tool",
+        "Must not: generic SQL tool"
+      ]
+    },
+    {
+      "id": "authorized-audit-and-fix",
+      "prompt": "Audit and fix the outdated agent guidance in this repository. The correct commands are already in the package and CI configuration. Keep runtime interfaces out of scope.",
+      "expected_output": "Evidence-backed local guidance fixes with applicable validation; no repeated approval or runtime additions.",
+      "files": [],
+      "assertions": [
+        "Inspects current guidance, source, and Git state before editing.",
+        "Completes the clear local fixes authorized by the request without a second permission gate.",
+        "Preserves unrelated changes and reports executed versus unrun checks."
+      ]
+    }
+  ]
+}

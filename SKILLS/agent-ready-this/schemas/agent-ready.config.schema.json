@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/agent-ready-this/config.schema.json",
+  "title": "Agent Ready This configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "mode": {
+      "enum": [
+        "assess",
+        "audit",
+        "plan",
+        "apply-baseline",
+        "apply-runtime",
+        "validate",
+        "refresh"
+      ],
+      "default": "assess"
+    },
+    "targets": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "vendors": {
+          "oneOf": [
+            {
+              "const": "auto"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          ]
+        },
+        "runtime": {
+          "enum": [
+            "auto",
+            "none",
+            "plan-only",
+            "explicit"
+          ],
+          "default": "auto"
+        }
+      }
+    },
+    "grill": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "enum": [
+            "auto",
+            "off",
+            "force"
+          ],
+          "default": "auto"
+        },
+        "threshold": {
+          "enum": [
+            "conservative",
+            "balanced",
+            "aggressive"
+          ],
+          "default": "balanced"
+        },
+        "maxQuestionsPerRound": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "default": 5
+        },
+        "maxTotalQuestions": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30,
+          "default": 15
+        },
+        "allowSafeDefaults": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "experimental": {
+          "enum": [
+            "off",
+            "report-only",
+            "allow"
+          ],
+          "default": "report-only"
+        },
+        "adapters": {
+          "enum": [
+            "detected-only",
+            "explicit-only",
+            "all-registered"
+          ],
+          "default": "detected-only"
+        },
+        "overwriteHumanFiles": {
+          "const": false
+        },
+        "useSymlinks": {
+          "type": "boolean",
+          "default": false
+        },
+        "runtimeRequiresExplicitApproval": {
+          "const": true
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "publicBaseUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "profiles": {
+          "oneOf": [
+            {
+              "const": "auto"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          ]
+        },
+        "knownFacts": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "goals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  },
+  "required": [
+    "version"
+  ]
+}

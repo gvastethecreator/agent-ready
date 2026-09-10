@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/agent-ready-this/recommendations.schema.json",
+  "title": "Agent Ready This recommendations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_audit",
+    "phase",
+    "summary",
+    "recommendations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "generator": {
+      "type": "string"
+    },
+    "source_audit": {
+      "type": "string"
+    },
+    "phase": {
+      "enum": [
+        "preliminary",
+        "final"
+      ]
+    },
+    "policy": {
+      "type": "object"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "counts"
+      ],
+      "properties": {
+        "counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "highest_priority": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "safe_to_proceed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blocked": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/recommendation"
+      }
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "capability",
+        "layer",
+        "applicability",
+        "action",
+        "priority",
+        "confidence",
+        "impact",
+        "effort",
+        "risk",
+        "reason",
+        "evidence",
+        "unknowns",
+        "acceptance_criteria",
+        "grill_topics"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capability": {
+          "type": "string",
+          "minLength": 1
+        },
+        "layer": {
+          "enum": [
+            "development-baseline",
+            "documentation",
+            "quality",
+            "vendor-adapter",
+            "web-discovery",
+            "contract",
+            "runtime",
+            "interoperability",
+            "governance"
+          ]
+        },
+        "applicability": {
+          "enum": [
+            "required",
+            "recommended",
+            "conditional",
+            "report-only",
+            "not-applicable",
+            "blocked"
+          ]
+        },
+        "action": {
+          "enum": [
+            "create",
+            "update",
+            "repair",
+            "validate",
+            "investigate",
+            "skip"
+          ]
+        },
+        "priority": {
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "impact": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "effort": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "risk": {
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "expected_artifacts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rejected_alternatives": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "grill_topics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "grill_question_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}
