@@ -169,6 +169,42 @@ class AssessmentPipelineTests(unittest.TestCase):
             self.assertIn("unresolved decisions remain", report)
             self.assertNotIn("no unanswered material decision", report)
 
+    def test_non_js_stack_with_lowercase_instructions_and_github_ci(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            repo = base / "repo"
+            out = base / "out"
+            web = repo / "apps" / "web"
+            workflows = repo / ".github" / "workflows"
+            docs = repo / "docs"
+            for directory in (web, workflows, docs):
+                directory.mkdir(parents=True)
+            (repo / "Cargo.toml").write_text("[package]\nname = \"tray\"\n", encoding="utf-8")
+            (repo / "agents.md").write_text("# Instructions\n", encoding="utf-8")
+            (workflows / "ci.yml").write_text("on: push\n", encoding="utf-8")
+            (docs / "notes.md").write_text("# Internal notes\n", encoding="utf-8")
+            (web / "package.json").write_text(
+                json.dumps({
+                    "name": "web",
+                    "private": True,
+                    "scripts": {"build": "tsc && vite build", "test": "vitest run"},
+                    "dependencies": {"react": "1.0.0", "@tauri-apps/api": "1.0.0"},
+                }),
+                encoding="utf-8",
+            )
+            grill = self.run_assessment(repo, out)
+            audit = json.loads((out / "audit.json").read_text(encoding="utf-8"))
+            recs = {
+                item["id"]: item
+                for item in json.loads((out / "recommendations.preliminary.json").read_text(encoding="utf-8"))["recommendations"]
+            }
+            self.assertTrue(audit["signals"]["ci_candidate"])
+            self.assertEqual(audit["signals"]["quality_commands"]["missing_core"], [])
+            self.assertEqual(recs["canonical-instructions"]["action"], "validate")
+            self.assertEqual(recs["ci-readiness"]["action"], "validate")
+            self.assertEqual(recs["llms-txt"]["applicability"], "not-applicable")
+            self.assertNotEqual(grill["gate"]["status"], "required")
+
     def test_existing_assessment_is_not_overwritten(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             base = Path(tmp)

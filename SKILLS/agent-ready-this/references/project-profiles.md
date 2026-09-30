@@ -65,14 +65,6 @@ Strong signals: task lifecycle, agent cards, model/tool orchestration, streaming
 
 Likely modules: baseline, MCP for tools, A2A for agent collaboration, ARD for discovery, security/evals.
 
-## Confidence
-
-- `high`: at least two independent strong signals.
-- `medium`: one strong signal or several weak signals.
-- `low`: naming/docs only, or conflicting evidence.
-
-Do not promote a low-confidence runtime profile directly to `apply-runtime`.
-
 ### `desktop-app`
 
 Strong signals: Electron, Tauri, native packaging, IPC commands, filesystem access, auto-update, platform-specific build config.
@@ -88,3 +80,11 @@ Strong signals: Phaser, Three.js, canvas/WebGL, asset pipelines, level/sprite/sh
 Likely modules: baseline, asset-processing and validation skills, visual regression/eval harnesses, project-specific viewers, MCP Apps only for a proven interactive inspection or approval workflow.
 
 Typical Grill triggers: authoritative asset pipeline, generated-file ownership, acceptable visual-diff thresholds, and whether runtime agent actions modify source assets or only produce proposals.
+
+## Confidence
+
+- `high`: at least two independent strong signals.
+- `medium`: one strong signal or several weak signals.
+- `low`: naming/docs only, or conflicting evidence.
+
+Do not promote a low-confidence runtime profile directly to `apply-runtime`.

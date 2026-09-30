@@ -1,0 +1,64 @@
+{
+  "skill_name": "agent-ready-site",
+  "evals": [
+    {
+      "id": "job-first-shop-audit",
+      "prompt": "Is https://shop.example.com agent ready? Plans and prices are on /pricing and people buy through /checkout.",
+      "expected_output": "Frames read and do jobs, probes with --page and --expect for the price, runs the operate test up to the checkout review step, and reports a job x class matrix with evidence levels.",
+      "files": [],
+      "assertions": [
+        "Defines jobs with start URL, agent classes, success signal, and stop point before analysis.",
+        "Runs probe_site.py with --expect for the pricing fact and writes evidence outside the skill.",
+        "Stops the operate test at the checkout review step without placing an order.",
+        "Leads the report with a job x class matrix, each cell with an evidence level.",
+        "Must not: a single score presented as the verdict."
+      ]
+    },
+    {
+      "id": "scanner-grade-chasing",
+      "prompt": "isitagentready gave our marketing site a D. Tell me what files to add to get an A.",
+      "expected_output": "Maps scanner categories to checks, recommends only items a wanted agent class uses for a job, and explains which scanner items do not apply.",
+      "files": [],
+      "assertions": [
+        "Uses the scanner crosswalk to relate categories to checks.",
+        "Treats Web Bot Auth key directory as not applicable unless the organization runs a signing agent.",
+        "Does not recommend A2A, MCP server card, or Agent Skills index without a matching product condition.",
+        "Covers checks the scanner cannot see, such as edge behavior by class or JS-only facts.",
+        "Must not: ai.txt or meta name=llms recommended."
+      ]
+    },
+    {
+      "id": "spa-soft-404",
+      "prompt": "Audit our React SPA for agent readiness. The host returns index.html for every path.",
+      "expected_output": "Detects the soft 404, refuses to count HTML fallbacks as well-known resources, and checks whether job facts exist without JavaScript.",
+      "files": [],
+      "assertions": [
+        "Reports soft_404 and treats HTML well-known responses as absent.",
+        "Checks read-job facts in raw visible text and confirms JS dependence in the rendered page.",
+        "Must not: llms.txt or api-catalog reported present from an HTML fallback."
+      ]
+    },
+    {
+      "id": "waf-blocks-fetch-agents",
+      "prompt": "Audit and fix: our docs should be readable by Claude Code and ChatGPT, but users say fetches fail. Repo is here.",
+      "expected_output": "Runs the probe with --ua-matrix, identifies the edge response for fetch agents, fixes local repo items, and leaves CDN or WAF changes as a proposal needing authority.",
+      "files": [],
+      "assertions": [
+        "Compares browser, tool, and fetch-agent user agents and names spoofed-UA limits.",
+        "Classifies a block of Claude-User or ChatGPT-User against owner intent as an E1 contradiction.",
+        "Does not change CDN or WAF settings without separate authority.",
+        "Must not: markdown served by user-agent sniffing."
+      ]
+    },
+    {
+      "id": "route-webmcp-build",
+      "prompt": "Add WebMCP tools to our booking page so Chrome agents can pick a time slot.",
+      "expected_output": "Routes the implementation to web-agent-ready; runs no site audit unless asked.",
+      "files": [],
+      "assertions": [
+        "Identifies web-agent-ready as the owner of in-page tool implementation.",
+        "Must not: a full site readiness audit substituted for the requested build."
+      ]
+    }
+  ]
+}

@@ -180,7 +180,7 @@ def main() -> int:
 
     result = {
         "schema_version": 1,
-        "generator": "agent-ready-this@0.2.0-plan",
+        "generator": "agent-ready-this@0.3.0-plan",
         "repository": str(root),
         "checks": checks,
         "issues": issues,

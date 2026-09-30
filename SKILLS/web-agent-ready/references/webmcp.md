@@ -2,11 +2,12 @@
 
 ## Check the target contract
 
-Reviewed 2026-09-08 against the [community draft](https://webmachinelearning.github.io/webmcp/) dated 2026-09-04 and [Chrome's imperative guide](https://developer.chrome.com/docs/ai/webmcp/imperative-api) updated 2026-09-01. These sources differ:
+Reviewed 2026-09-30 against [Chrome's imperative guide](https://developer.chrome.com/docs/ai/webmcp/imperative-api) updated 2026-09-21 and the [community draft](https://webmachinelearning.github.io/webmcp/). Chrome gates:
 
-- Chrome documents `executeTool(tool, JSON.stringify(args), options)`.
-- The draft describes an object argument. Do not copy that signature into a Chrome integration without checking the target build.
-- Chrome documents unregistering without cancelling in-flight execution from Chrome 153. Treat removal and cancellation as separate operations.
+- `executeTool(tool, args, options)` takes a JSON-serializable object. JSON-stringified arguments are deprecated from Chrome 155; builds before 155 may still require them.
+- From Chrome 153, unregistering a tool does not cancel in-flight execution. Treat removal and cancellation as separate operations.
+- Annotations: `readOnlyHint`, `untrustedContentHint`, `consequentialHint`, and `debugging` (Chrome 156+). Semantics are in [security.md](security.md).
+- `getTools({ fromOrigins })` lists tools from permitted cross-origin frames.
 
 Record browser/build, enablement, API signatures, and source date. Recheck before implementation. Use one verified contract; do not try both signatures on a real action. If native access is unavailable, limit the evidence claim to the checks actually run.
 
@@ -30,7 +31,7 @@ function mountFilterTool() {
       required: ["query"],
       additionalProperties: false,
     },
-    annotations: { readOnlyHint: false, untrustedContentHint: false },
+    annotations: { readOnlyHint: false, untrustedContentHint: false, consequentialHint: false },
     async execute(input, { signal }) {
       const query = parseFilterInput(input);
       const workSignal = AbortSignal.any([signal, lifetime.signal]);
@@ -55,7 +56,7 @@ A rejected registration needs a reported cause, not a silent success: inspect du
 
 ## Discovery and manual execution
 
-For the Chrome contract documented above, in the live owner document:
+For the Chrome 155+ contract documented above, in the live owner document:
 
 ```js
 const tools = await document.modelContext.getTools();
@@ -63,7 +64,7 @@ const tool = tools.find(item => item.name === "filter-results");
 if (!tool) throw new Error("Expected page tool is missing");
 const stop = new AbortController();
 const result = await document.modelContext.executeTool(
-  tool, JSON.stringify({ query: "spring" }), { signal: stop.signal },
+  tool, { query: "spring" }, { signal: stop.signal },
 );
 ```
 

@@ -18,7 +18,7 @@
 
 1. Inspect the relevant scope and its nearest `AGENTS.md`.
 2. Make the smallest coherent change.
-3. Add or update tests for observable behavior.
+3. Reuse existing tests; add one only for an uncovered observable failure.
 4. Run the scoped quality commands.
 5. Report commands, results, risks, and unverified assumptions.
 
@@ -34,7 +34,4 @@
 
 ## Further documentation
 
-- `docs/agent/PROJECT_MAP.md`
-- `docs/agent/COMMANDS.md`
-- `docs/agent/TEST_STRATEGY.md`
-- `docs/agent/SECURITY_BOUNDARIES.md`
+<!-- Link existing docs (architecture, contributing, security) instead of copying them. -->

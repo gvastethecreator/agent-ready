@@ -39,8 +39,10 @@ Purchases and irreversible jobs: omit `toolautosubmit`; `execute` should open or
 
 - `readOnlyHint: true` only for getters. Name incidental effects explicitly; do not mark a tool read-only if it changes the cart or other application state.
 - `untrustedContentHint: true` when returning other users' names, reviews, emails, or fetched third-party text so the agent does not treat it as site policy.
+- `consequentialHint: true` for significant, real-world, or irreversible effects: booking, payment, transfer, deletion, sending to others.
+- `debugging: true` only for tools built for developer tooling or tests (Chrome 156+). Keep them out of documents ordinary users load.
 
-Hints describe behavior; they do not authenticate a caller, authorize an object, sanitize output, or enforce consent. The current draft also defines `consequentialHint`; verify target support and set it for consequential tools.
+Hints describe behavior; they do not authenticate a caller, authorize an object, sanitize output, or enforce consent.
 
 ## Confirmation UX
 

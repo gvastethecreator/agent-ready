@@ -17,7 +17,7 @@ Reuse one supported browser surface and the available profile. Use focused scrip
 2. Invoke a safe representative call; check arguments, result, visible state, and console errors.
 3. Exercise each changed side-effect boundary with authorized fixture data. Verify input rejection and any applicable confirmation before the effect.
 4. Remove the view or its access and confirm the tool disappears. Separately cancel a pending call and verify that late completion does not corrupt UI state.
-5. For a form without `toolautosubmit`, verify populated fields and the visible submit/review step. Test human submission too.
+5. For a form without `toolautosubmit`, verify populated fields and the visible submit/review step. Test human submission too, and observe `toolcancel` when the user cancels or resets.
 6. Confirm that the normal job still works without WebMCP. Use one desktop viewport unless responsive changes require another size.
 
 Unregistration and in-flight cancellation require separate observations. An aborted request does not prove a remote write was undone. For calls that navigate, inspect the destination instead of treating `null` as a failed action.

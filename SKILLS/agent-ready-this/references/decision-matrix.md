@@ -42,9 +42,9 @@ Structured assessment records use these fields; a small chat recommendation can 
 | `quality-command-contract` | Deterministic commands | Any maintained project | Never exclude; missing gates become blockers | Authoritative commands cannot be established from source/CI |
 | `project-agent-skills` | Reusable procedures | Repeated multi-step workflows or domain knowledge | One-line convention or no repeatability evidence | Highest-value repeated workflows are unknown |
 | `vendor-adapters` | Client-specific integration | Client config detected or requested | Would duplicate canonical instructions | First-class clients are unknown |
-| `ci-readiness` | Independent quality enforcement | Project has executable quality gates | Tiny non-code content repository | Usually none; inspect CI first |
-| `agentic-evals-and-drift` | Behavioral proof and synchronization | Canonical files or managed content exist | One-off archive with no maintenance | Success criteria may be useful, rarely blocking |
-| `llms-txt` | Public content index | Public website/docs with stable useful pages | Private app, no public scope, or no useful content | Public base URL or intended content is unclear |
+| `ci-readiness` | Independent quality enforcement | CI exists (validate it), or a merge or release gate is required | No required gate; keep no CI or one job running an existing local command | Usually none; inspect CI first |
+| `agentic-evals-and-drift` | Behavioral proof and synchronization | A repeated agent task whose failure is costly and not covered by existing checks | Default eval suites or drift pipelines | Success criteria may be useful, rarely blocking |
+| `llms-txt` | Public content index | Public website/docs with stable useful pages; verify the deployed file with `agent-ready-site` | Private app, desktop app UI, no public scope, or no useful content | Public base URL or intended content is unclear |
 | `openapi-contract` | HTTP contract | Existing HTTP API with stable operations | No API or contract cannot be maintained | Stable supported route set is unclear |
 | `arazzo-workflows` | API workflow contract | Important multi-step workflows over validated OpenAPI | Simple independent operations | High-value workflow set is unknown |
 | `asyncapi-contract` | Event contract | Messaging/events form a durable interface | Internal incidental events only | Contractual channels/consumers are unclear |

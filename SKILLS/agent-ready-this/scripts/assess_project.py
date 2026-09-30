@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-GENERATOR = "agent-ready-this@0.2.0-plan"
+GENERATOR = "agent-ready-this@0.3.0-plan"
 
 
 def run_stage(command: list[str]) -> None:

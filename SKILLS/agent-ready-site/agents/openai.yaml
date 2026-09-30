@@ -1,0 +1,6 @@
+interface:
+  display_name: "Agent Ready Site"
+  short_description: "Audit how agents access, read, and operate a live site"
+  default_prompt: "Use $agent-ready-site to audit this site or web app for agents: frame the key jobs, probe it over HTTP, run the operate test in a browser, and report which agent classes can complete which jobs, with evidence and owners for each fix."
+policy:
+  allow_implicit_invocation: true

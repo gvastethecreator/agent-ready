@@ -9,7 +9,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-GENERATOR = "agent-ready-this@0.2.0-plan"
+GENERATOR = "agent-ready-this@0.3.0-plan"
 ACTIVE = {"required", "recommended", "conditional", "report-only", "blocked"}
 
 
@@ -105,10 +105,20 @@ def main() -> int:
 
     recommendations: list[dict[str, Any]] = []
 
-    root_agents = [p for p in agent_paths if p == "AGENTS.md"]
+    root_agents = [p for p in agent_paths if p.lower() == "agents.md"]
     other_instruction_files = [
-        p for p in agent_paths if p != "AGENTS.md" and p.endswith(("AGENTS.md", "CLAUDE.md", "GEMINI.md"))
+        p for p in agent_paths
+        if p not in root_agents and p.rsplit("/", 1)[-1].lower() in {"agents.md", "claude.md", "gemini.md"}
     ]
+    instruction_unknowns = (
+        ["Existing instruction files may have overlapping ownership or contradictory rules."]
+        if len(other_instruction_files) > 1
+        else []
+    )
+    if root_agents and root_agents[0] != "AGENTS.md":
+        instruction_unknowns.append(
+            f"The root file is named {root_agents[0]}; tools on case-sensitive filesystems look for AGENTS.md."
+        )
     recommendations.append(
         rec(
             id="canonical-instructions",
@@ -128,11 +138,7 @@ def main() -> int:
                 else "The repository needs one concise, evidence-backed instruction entry point for coding agents."
             ),
             evidence=root_agents + other_instruction_files[:5],
-            unknowns=(
-                ["Existing instruction files may have overlapping ownership or contradictory rules."]
-                if len(other_instruction_files) > 1
-                else []
-            ),
+            unknowns=instruction_unknowns,
             expected_artifacts=["AGENTS.md"],
             acceptance_criteria=[
                 "Commands and paths are verified against the repository.",
@@ -192,11 +198,7 @@ def main() -> int:
                 else "Agents need a compact map of entry points, package responsibilities, data flow, and forbidden boundaries."
             ),
             evidence=[docs.get("architecture")] if architecture_exists else [],
-            expected_artifacts=[
-                "docs/agent/PROJECT_MAP.md",
-                "docs/agent/ARCHITECTURE.md",
-                "docs/agent/CONSTRAINTS.md",
-            ],
+            expected_artifacts=["Existing architecture doc, or one concise map linked from AGENTS.md"],
             acceptance_criteria=[
                 "Every documented path exists.",
                 "The map distinguishes source, generated files, fixtures, and deployment code.",
@@ -206,23 +208,29 @@ def main() -> int:
     )
 
     quality_evidence: list[str] = []
-    for capability, matches in quality_found.items():
-        for match in matches[:3]:
-            quality_evidence.append(f"{match.get('path')}#scripts.{match.get('script')}")
+    core_first = sorted(quality_found, key=lambda name: ("build", "lint", "typecheck", "test").index(name)
+                        if name in ("build", "lint", "typecheck", "test") else 9)
+    for capability in core_first:
+        for match in quality_found[capability][:3]:
+            quality_evidence.append(match.get("evidence") or f"{match.get('path')}#scripts.{match.get('script')}")
+    convention_only = quality.get("convention_only", []) if isinstance(quality, dict) else []
+    quality_applicability = "required"
+    quality_priority = "P0"
     if missing_core:
-        quality_applicability = "required"
         quality_action = "investigate"
-        quality_reason = "Core quality commands are missing or cannot be identified reliably: " + ", ".join(missing_core) + "."
+        quality_reason = (
+            "Core quality commands are missing or cannot be identified reliably: " + ", ".join(missing_core)
+            + ". Check CI, README, and task runners before asking."
+        )
         quality_unknowns = ["The authoritative command or accepted substitute for each missing quality gate is unknown."]
         quality_topics = ["quality_commands"]
-        quality_priority = "P0"
     else:
-        quality_applicability = "required"
         quality_action = "validate"
-        quality_reason = "Build, lint, typecheck, and test scripts were detected; they still need clean-environment verification."
+        quality_reason = "Build, lint, typecheck, and test commands were detected; they still need clean-environment verification."
+        if convention_only:
+            quality_reason += " Inferred from stack conventions and unverified: " + ", ".join(convention_only) + "."
         quality_unknowns = []
         quality_topics = []
-        quality_priority = "P0"
     recommendations.append(
         rec(
             id="quality-command-contract",
@@ -239,7 +247,7 @@ def main() -> int:
             reason=quality_reason,
             evidence=quality_evidence,
             unknowns=quality_unknowns,
-            expected_artifacts=["docs/agent/COMMANDS.md", "CI quality gates"],
+            expected_artifacts=["Commands section in AGENTS.md", "Existing CI gate, when present"],
             prerequisites=["Resolve package scope and environment requirements."],
             acceptance_criteria=[
                 "Install works from a clean checkout with the detected lockfile.",
@@ -325,22 +333,23 @@ def main() -> int:
             title="CI enforcement for agent-relevant quality gates",
             capability="CI",
             layer="quality",
-            applicability="recommended",
-            action="validate" if has_ci else "create",
-            priority="P1",
+            applicability="recommended" if has_ci else "conditional",
+            action="validate" if has_ci else "investigate",
+            priority="P1" if has_ci else "P2",
             confidence="high",
-            impact="high",
-            effort="medium",
+            impact="high" if has_ci else "medium",
+            effort="low" if has_ci else "medium",
             risk="low",
             reason=(
                 "CI exists and should enforce the same commands agents are instructed to run."
                 if has_ci
-                else "A project claiming agent readiness needs automated verification independent of agent self-reporting."
+                else "No CI detected. Add it only for a required merge or release gate: one job running an existing local command."
             ),
             evidence=list(inventory.get("ci_paths", [])),
-            expected_artifacts=["CI workflow or equivalent pipeline"],
+            expected_artifacts=["Existing CI workflow"] if has_ci else ["One workflow running an existing local command, if required"],
             prerequisites=["Resolve the quality command contract."],
             acceptance_criteria=["CI and local instructions invoke equivalent gates in the correct scopes."],
+            rejected_alternatives=["Add jobs, matrices, or runtimes beyond the required gate."],
         )
     )
 
@@ -373,7 +382,7 @@ def main() -> int:
                 if sensitive_runtime
                 else []
             ),
-            expected_artifacts=["docs/agent/SECURITY_BOUNDARIES.md"],
+            expected_artifacts=["Security section in AGENTS.md, or the existing SECURITY.md"],
             acceptance_criteria=[
                 "Secrets and sensitive data handling are explicit.",
                 "Read, write, destructive, and external-effect operations have separate rules.",
@@ -389,21 +398,22 @@ def main() -> int:
             title="Agentic evals and documentation drift detection",
             capability="evals and drift",
             layer="quality",
-            applicability="recommended",
-            action="create",
-            priority="P1",
-            confidence="high",
-            impact="high",
+            applicability="conditional",
+            action="investigate",
+            priority="P2",
+            confidence="medium",
+            impact="medium",
             effort="medium",
             risk="low",
-            reason="Agent readiness must be demonstrated by tasks and synchronization checks, not only by the presence of files.",
+            reason=(
+                "Readiness is shown by tasks agents complete, not file presence. Add an eval only for a repeated "
+                "agent task whose failure is costly; reuse existing tests and checks first."
+            ),
             evidence=[],
-            expected_artifacts=["evals/agent-readiness/*", ".agent-ready/manifest.json", "CI drift check"],
+            expected_artifacts=["One behavior eval per repeated, costly agent task, if justified"],
             prerequisites=["Establish canonical sources and ownership metadata."],
-            acceptance_criteria=[
-                "At least one navigation, scoped-change, and failure-handling eval passes.",
-                "Managed content reports stale source hashes instead of silently overwriting changes.",
-            ],
+            acceptance_criteria=["Each eval covers a real repeated task and names the failure it catches."],
+            rejected_alternatives=["Build an eval suite or drift pipeline by default."],
         )
     )
 

@@ -1,0 +1,341 @@
+{
+  "schema_version": 1,
+  "last_verified": "2026-09-30",
+  "note": "Internal lookup index for agent-ready-site, not an external standard. Recheck an entry's source before it drives a recommendation; drafts and agent tokens move. probe_site.py reads probe_paths, expect, and agents from this file.",
+  "policies": {
+    "baseline": "Check on every audit.",
+    "recommended": "Recommend when a wanted agent class runs a job the capability serves.",
+    "conditional": "Recommend only when the entry's condition holds.",
+    "report-only": "Report presence; recommend only for an explicit product goal.",
+    "not-applicable-unless": "Skip unless the entry's condition holds.",
+    "avoid": "No documented consumer. Never recommend; flag when present only if it causes cloaking, drift, or maintenance cost."
+  },
+  "capabilities": [
+    {
+      "id": "robots-txt",
+      "label": "robots.txt",
+      "check": "A1",
+      "maturity": "RFC 9309",
+      "consumers": "Crawlers; some user-initiated fetchers.",
+      "policy": "baseline",
+      "source": "https://www.rfc-editor.org/rfc/rfc9309"
+    },
+    {
+      "id": "content-signals",
+      "label": "Content Signals (robots.txt Content-Signal)",
+      "check": "E1",
+      "maturity": "Vendor-proposed robots.txt extension (Cloudflare).",
+      "consumers": "Declares search, ai-input, and ai-train preferences; no enforcement.",
+      "policy": "recommended",
+      "condition": "The owner has a stated preference for search, AI input, or AI training use.",
+      "source": "https://contentsignals.org/"
+    },
+    {
+      "id": "ietf-aipref",
+      "label": "IETF AI Preferences vocabulary",
+      "check": "E1",
+      "maturity": "IETF working-group draft.",
+      "consumers": "None confirmed.",
+      "policy": "report-only",
+      "source": "https://datatracker.ietf.org/wg/aipref/about/"
+    },
+    {
+      "id": "web-bot-auth",
+      "label": "Web Bot Auth key directory",
+      "check": "A6",
+      "maturity": "IETF draft on HTTP Message Signatures (RFC 9421).",
+      "consumers": "CDNs and sites that verify signed agents.",
+      "policy": "not-applicable-unless",
+      "condition": "The organization operates its own crawler or agent that signs requests. A site that only receives agents verifies signatures at its CDN or server instead.",
+      "probe_paths": ["/.well-known/http-message-signatures-directory"],
+      "expect": "json",
+      "source": "https://datatracker.ietf.org/doc/draft-meunier-web-bot-auth-architecture/"
+    },
+    {
+      "id": "sitemap",
+      "label": "XML sitemap",
+      "check": "B5",
+      "maturity": "sitemaps.org protocol.",
+      "consumers": "Search and AI crawlers.",
+      "policy": "baseline",
+      "source": "https://www.sitemaps.org/protocol.html"
+    },
+    {
+      "id": "link-header",
+      "label": "HTTP Link header",
+      "check": "B2",
+      "maturity": "RFC 8288.",
+      "consumers": "Headless agents that read response headers.",
+      "policy": "conditional",
+      "condition": "Announces a markdown alternate or an api-catalog.",
+      "source": "https://www.rfc-editor.org/rfc/rfc8288"
+    },
+    {
+      "id": "markdown-negotiation",
+      "label": "Markdown content negotiation (Accept: text/markdown)",
+      "check": "B2",
+      "maturity": "HTTP content negotiation (RFC 9110); CDN support such as Cloudflare Markdown for Agents.",
+      "consumers": "Claude Code, OpenCode, and Cursor send Accept: text/markdown by default (Cloudflare, 2026-04).",
+      "policy": "recommended",
+      "condition": "Fetch agents are a wanted class.",
+      "source": "https://blog.cloudflare.com/agent-readiness/"
+    },
+    {
+      "id": "markdown-alternate",
+      "label": "Declared markdown alternate (link rel=alternate type=text/markdown, .md routes)",
+      "check": "B2",
+      "maturity": "Convention; .md routes come from the llms.txt proposal.",
+      "consumers": "Tools that read head links or follow llms.txt links.",
+      "policy": "recommended",
+      "condition": "Fetch agents are a wanted class.",
+      "source": "https://llmstxt.org/"
+    },
+    {
+      "id": "llms-txt",
+      "label": "llms.txt",
+      "check": "B6",
+      "maturity": "Proposal.",
+      "consumers": "Tools and agents pointed at it by a user or doc; few crawlers fetch it unprompted.",
+      "policy": "conditional",
+      "condition": "Docs, developer, or API product, or a content site with a curated index worth maintaining.",
+      "source": "https://llmstxt.org/"
+    },
+    {
+      "id": "llms-full-txt",
+      "label": "llms-full.txt",
+      "check": "B6",
+      "maturity": "Convention.",
+      "consumers": "Coding agents loading a whole docs set.",
+      "policy": "conditional",
+      "condition": "Docs set small enough to ship as one file.",
+      "probe_paths": ["/llms-full.txt"],
+      "expect": "text",
+      "source": "https://llmstxt.org/"
+    },
+    {
+      "id": "json-ld",
+      "label": "schema.org JSON-LD",
+      "check": "B7",
+      "maturity": "schema.org vocabulary.",
+      "consumers": "Search engines. A 2025 controlled test found major assistants missed product facts present only in JSON-LD.",
+      "policy": "recommended",
+      "condition": "Supports visible facts; never the only copy of a fact.",
+      "source": "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms"
+    },
+    {
+      "id": "api-catalog",
+      "label": "API catalog",
+      "check": "D1",
+      "maturity": "RFC 9727.",
+      "consumers": "API discovery clients; agent-readiness scanners.",
+      "policy": "conditional",
+      "condition": "Public or partner HTTP API.",
+      "probe_paths": ["/.well-known/api-catalog"],
+      "expect": "linkset",
+      "source": "https://www.rfc-editor.org/rfc/rfc9727"
+    },
+    {
+      "id": "openapi",
+      "label": "OpenAPI description",
+      "check": "D1",
+      "maturity": "Published specification.",
+      "consumers": "API and tool-generating agents.",
+      "policy": "conditional",
+      "condition": "Stable HTTP API.",
+      "source": "https://spec.openapis.org/"
+    },
+    {
+      "id": "problem-details",
+      "label": "Problem Details errors",
+      "check": "D4",
+      "maturity": "RFC 9457.",
+      "consumers": "Programmatic agents recovering from errors.",
+      "policy": "conditional",
+      "condition": "HTTP API.",
+      "source": "https://www.rfc-editor.org/rfc/rfc9457"
+    },
+    {
+      "id": "oauth-as-metadata",
+      "label": "OAuth authorization server metadata",
+      "check": "D3",
+      "maturity": "RFC 8414.",
+      "consumers": "OAuth clients, including MCP clients.",
+      "policy": "conditional",
+      "condition": "Agents act on user accounts through an API or MCP server.",
+      "probe_paths": ["/.well-known/oauth-authorization-server"],
+      "expect": "json",
+      "source": "https://www.rfc-editor.org/rfc/rfc8414"
+    },
+    {
+      "id": "openid-configuration",
+      "label": "OpenID Connect discovery",
+      "check": "D3",
+      "maturity": "OpenID Connect Discovery 1.0.",
+      "consumers": "OIDC clients.",
+      "policy": "conditional",
+      "condition": "The site is an OpenID provider.",
+      "probe_paths": ["/.well-known/openid-configuration"],
+      "expect": "json",
+      "source": "https://openid.net/specs/openid-connect-discovery-1_0.html"
+    },
+    {
+      "id": "oauth-protected-resource",
+      "label": "OAuth protected resource metadata",
+      "check": "D3",
+      "maturity": "RFC 9728.",
+      "consumers": "MCP clients discovering authorization for a remote server.",
+      "policy": "conditional",
+      "condition": "Protected API or remote MCP server.",
+      "probe_paths": ["/.well-known/oauth-protected-resource"],
+      "expect": "json",
+      "source": "https://www.rfc-editor.org/rfc/rfc9728"
+    },
+    {
+      "id": "mcp-server",
+      "label": "Remote MCP server",
+      "check": "D2",
+      "maturity": "Open protocol, spec 2026-07-28.",
+      "consumers": "MCP hosts and programmatic agents.",
+      "policy": "conditional",
+      "condition": "Jobs that should run without an open page.",
+      "source": "https://modelcontextprotocol.io/specification/2026-07-28"
+    },
+    {
+      "id": "mcp-server-card",
+      "label": "MCP server card",
+      "check": "D2",
+      "maturity": "MCP SEP draft (SEP-1649, SEP-2127); the path changed between drafts.",
+      "consumers": "Some MCP clients and agent-readiness scanners.",
+      "policy": "conditional",
+      "condition": "A remote MCP server exists.",
+      "probe_paths": ["/.well-known/mcp/server-card.json", "/.well-known/mcp-server-card", "/.well-known/mcp/catalog.json"],
+      "expect": "json",
+      "source": "https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2127"
+    },
+    {
+      "id": "agent-skills-index",
+      "label": "Agent Skills discovery index",
+      "check": "D6",
+      "maturity": "Emerging discovery proposal.",
+      "consumers": "Agent-readiness scanners; some coding agents.",
+      "policy": "conditional",
+      "condition": "Developer product that publishes Agent Skills.",
+      "probe_paths": ["/.well-known/agent-skills/index.json"],
+      "expect": "json",
+      "source": "https://blog.cloudflare.com/agent-readiness/"
+    },
+    {
+      "id": "a2a-agent-card",
+      "label": "A2A agent card",
+      "check": "D5",
+      "maturity": "A2A 1.0.0.",
+      "consumers": "A2A clients delegating tasks.",
+      "policy": "not-applicable-unless",
+      "condition": "The product is an agent with a task lifecycle.",
+      "probe_paths": ["/.well-known/agent-card.json"],
+      "expect": "json",
+      "source": "https://a2a-protocol.org/latest/specification/"
+    },
+    {
+      "id": "ard-catalog",
+      "label": "Agentic Resource Discovery catalog",
+      "check": "D1",
+      "maturity": "Emerging open specification.",
+      "consumers": "Unconfirmed.",
+      "policy": "report-only",
+      "source": "https://developers.googleblog.com/announcing-the-agentic-resource-discovery-specification/"
+    },
+    {
+      "id": "webmcp",
+      "label": "WebMCP in-page tools",
+      "check": "C7",
+      "maturity": "Proposed; Chrome origin trial.",
+      "consumers": "Browser agents in supporting Chrome builds.",
+      "policy": "report-only",
+      "condition": "Recommend only for repeated, high-value do jobs; implementation belongs to web-agent-ready.",
+      "source": "https://developer.chrome.com/docs/ai/webmcp"
+    },
+    {
+      "id": "x402",
+      "label": "x402 payments (HTTP 402)",
+      "check": "D7",
+      "maturity": "Open protocol, early adoption.",
+      "consumers": "Paying agents and crawlers.",
+      "policy": "report-only",
+      "source": "https://www.x402.org/"
+    },
+    {
+      "id": "acp",
+      "label": "Agentic Commerce Protocol",
+      "check": "D7",
+      "maturity": "Open specification, early adoption.",
+      "consumers": "Assistant checkout integrations.",
+      "policy": "report-only",
+      "source": "https://www.agenticcommerce.dev/"
+    },
+    {
+      "id": "ucp",
+      "label": "Universal Commerce Protocol",
+      "check": "D7",
+      "maturity": "Open specification, early adoption.",
+      "consumers": "Assistant checkout integrations.",
+      "policy": "report-only",
+      "source": "https://ucp.dev/"
+    },
+    {
+      "id": "ai-txt",
+      "label": "ai.txt or /.well-known/ai.txt",
+      "check": "E1",
+      "maturity": "Competing proposals.",
+      "consumers": "None documented.",
+      "policy": "avoid",
+      "source": "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms"
+    },
+    {
+      "id": "meta-llms",
+      "label": "meta name=llms or meta name=ai-content-url",
+      "check": "B2",
+      "maturity": "WHATWG request closed as not planned; no specification for ai-content-url.",
+      "consumers": "None documented.",
+      "policy": "avoid",
+      "source": "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms"
+    },
+    {
+      "id": "agent-hint-text",
+      "label": "HTML comments, hidden text, or AI-only pages addressed to agents",
+      "check": "E2",
+      "maturity": "Folk practice.",
+      "consumers": "None documented; parsers strip comments. Hidden agent-only text is a cloaking and injection risk.",
+      "policy": "avoid",
+      "source": "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms"
+    },
+    {
+      "id": "ua-sniffed-markdown",
+      "label": "Markdown served by user-agent sniffing",
+      "check": "E2",
+      "maturity": "Anti-pattern.",
+      "consumers": "Treated as cloaking by search engines. Use Accept negotiation instead.",
+      "policy": "avoid",
+      "source": "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms"
+    }
+  ],
+  "agents": [
+    {"token": "gptbot", "name": "GPTBot", "operator": "OpenAI", "class": "crawler", "purpose": "training", "ua_probe": true},
+    {"token": "oai-searchbot", "name": "OAI-SearchBot", "operator": "OpenAI", "class": "crawler", "purpose": "search", "ua_probe": true},
+    {"token": "chatgpt-user", "name": "ChatGPT-User", "operator": "OpenAI", "class": "fetch", "purpose": "user request", "ua_probe": true},
+    {"token": "claudebot", "name": "ClaudeBot", "operator": "Anthropic", "class": "crawler", "purpose": "training", "ua_probe": true},
+    {"token": "claude-searchbot", "name": "Claude-SearchBot", "operator": "Anthropic", "class": "crawler", "purpose": "search", "ua_probe": true},
+    {"token": "claude-user", "name": "Claude-User", "operator": "Anthropic", "class": "fetch", "purpose": "user request", "ua_probe": true},
+    {"token": "perplexitybot", "name": "PerplexityBot", "operator": "Perplexity", "class": "crawler", "purpose": "search", "ua_probe": true},
+    {"token": "perplexity-user", "name": "Perplexity-User", "operator": "Perplexity", "class": "fetch", "purpose": "user request", "ua_probe": true},
+    {"token": "ccbot", "name": "CCBot", "operator": "Common Crawl", "class": "crawler", "purpose": "open dataset", "ua_probe": true},
+    {"token": "meta-externalagent", "name": "Meta-ExternalAgent", "operator": "Meta", "class": "crawler", "purpose": "training", "ua_probe": true},
+    {"token": "google-extended", "name": "Google-Extended", "operator": "Google", "class": "control-token", "purpose": "Gemini training and grounding control; robots.txt token only", "ua_probe": false},
+    {"token": "applebot-extended", "name": "Applebot-Extended", "operator": "Apple", "class": "control-token", "purpose": "Apple AI training control; robots.txt token only", "ua_probe": false}
+  ],
+  "agent_sources": [
+    "https://platform.openai.com/docs/bots",
+    "https://docs.perplexity.ai/guides/bots",
+    "https://developers.google.com/search/docs/crawling-indexing/google-common-crawlers"
+  ]
+}

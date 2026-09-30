@@ -4,7 +4,7 @@ description: "Repository agent readiness. Use to audit or improve coding-agent g
 compatibility: "Optional assessment helpers require Python 3.11+ and the standard library. Git adds repository evidence; network access is needed to verify changing standards."
 metadata:
   author: BlackFlagWorks
-  version: "0.2.0-plan"
+  version: "0.3.0-plan"
 ---
 
 # Agent Ready This
@@ -24,7 +24,7 @@ Use the request to select the mode:
 
 When intent is unclear, use `assess`. A request to audit **and fix** authorizes the clear local fixes; show the material decision and continue. Ask only for missing information or authority that changes the proposed work. Reuse prior consent. Publishing, remote tracker changes, and consequential external actions need their own authority.
 
-This skill owns project readiness and interface selection. Use `web-agent-ready`, when available, for implementation of tools in an open page; `experience-design` for human understanding and control; `brainstormer` for new product capabilities. Load only the missing capability.
+This skill owns project readiness and interface selection. Use `agent-ready-site`, when available, to audit the live site or app from outside; `web-agent-ready` for implementation of tools in an open page; `experience-design` for human understanding and control; `brainstormer` for new product capabilities. Load only the missing capability.
 
 ## Process
 
@@ -70,7 +70,7 @@ For runtime work, read [security-model.md](references/security-model.md). Define
 
 ### 5. Verify and hand back
 
-At the final boundary, run the smallest applicable project checks. For changed interfaces, cover an authorized call and the relevant rejection or failure path. Use existing coverage first. Observe live discovery, execution, UI state, and cleanup when a page tool's behavior cannot be proved at a lower layer.
+At the final boundary, run the smallest applicable project checks. For changed interfaces, cover an authorized call and the relevant rejection or failure path. Use existing coverage first. Observe live discovery, execution, UI state, and cleanup when a page tool's behavior cannot be proved at a lower layer. For a deployed public site, check live agent access and reads with `agent-ready-site`, when available.
 
 Use [validation-rubric.md](references/validation-rubric.md) to separate structural, functional, and agent evidence. Report changed files, checks and results, skipped checks with reasons, unresolved decisions, and any limits on readiness. A score or generated receipt cannot replace missing proof.
 
@@ -86,6 +86,6 @@ python <skill-root>/scripts/assess_project.py --repo <project-root> --output-dir
 
 It emits `audit.json`, `recommendations.preliminary.json`, `grill-session.json`, and `assessment.md`. An existing output directory is rejected to preserve earlier work. On stage failure, retain partial outputs as incomplete evidence and retry in a new directory.
 
-Read [README.md](README.md) for stage commands and supported options. The inspector mainly extracts JavaScript package commands and file-level signals; verify other runtimes manually. Templates and the HTML planner are examples, not facts about the target.
+Read [assessment-cli.md](references/assessment-cli.md) for stage commands, options, and what the inspector reads. Commands inferred from stack conventions stay unverified until run. Templates are examples, not facts about the target.
 
-Answer ingestion, final recommendation recomputation, file-operation manifests, managed refresh, and runtime generators are **not implemented by the scripts**. The acting agent performs authorized work using repository tools. `--known-context` only suppresses settled questions; it does not update recommendations or grant approval. [VALIDATION.md](VALIDATION.md) records package evidence and limits.
+Answer ingestion, final recommendation recomputation, file-operation manifests, managed refresh, and runtime generators are **not implemented by the scripts**. The acting agent performs authorized work using repository tools. `--known-context` only suppresses settled questions; it does not update recommendations or grant approval.

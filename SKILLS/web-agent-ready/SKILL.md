@@ -10,6 +10,7 @@ Expose useful page actions to browser agents through the same logic and visible 
 ## Routing and scope
 
 - Repository guidance and coding-agent workflows: `agent-ready-this`, when available.
+- Whole-site readiness audit across crawlers, fetch, browser, and API agents: `agent-ready-site`, when available.
 - Public search and citation content: `ai-seo`.
 - Provider credentials or BYOK: `browser-secret-boundary-readiness`.
 - Missing labels, roles, or keyboard paths: `better-accessibility`.

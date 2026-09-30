@@ -1,0 +1,18 @@
+[
+  {"query": "Is our website agent ready? Audit https://example.com.", "should_trigger": true},
+  {"query": "Check if ChatGPT agent or Claude in Chrome can actually book a demo on our site.", "should_trigger": true},
+  {"query": "Audit whether AI crawlers and fetch agents can read our pricing page without JavaScript.", "should_trigger": true},
+  {"query": "Our isitagentready score is low; audit the site and tell me what actually matters.", "should_trigger": true},
+  {"query": "Is this web app agent-readable? Check markdown negotiation, robots rules for AI bots, and the accessibility tree.", "should_trigger": true},
+  {"query": "Our Cloudflare WAF might be blocking Claude-User. Audit agent access to the docs site.", "should_trigger": true},
+  {"query": "Hazme una auditoría de agent readiness de mi sitio.", "should_trigger": true},
+  {"query": "Can a computer-use agent finish signup on our web app? Find where it gets stuck.", "should_trigger": true},
+  {"query": "Write AGENTS.md so coding agents know how to run our tests.", "should_trigger": false},
+  {"query": "Register document.modelContext tools on the booking page.", "should_trigger": false},
+  {"query": "Improve our citations in AI Overviews and Perplexity answers.", "should_trigger": false},
+  {"query": "Fix keyboard focus order and missing labels on this settings form.", "should_trigger": false},
+  {"query": "Run a pre-launch checklist: favicon, 404 page, Open Graph tags.", "should_trigger": false},
+  {"query": "Measure Core Web Vitals and LCP on the homepage.", "should_trigger": false},
+  {"query": "Build a remote MCP server for our REST API.", "should_trigger": false},
+  {"query": "Generate an llms.txt for our docs repository from the content folder.", "should_trigger": false}
+]

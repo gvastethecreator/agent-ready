@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 from pathlib import Path
 from typing import Any, Iterable
@@ -33,7 +34,7 @@ SKIP_DIRS = {
 }
 MAX_FILES = 50_000
 MAX_TEXT_SCAN_BYTES = 1_000_000
-GENERATOR = "agent-ready-this@0.2.0-plan"
+GENERATOR = "agent-ready-this@0.3.0-plan"
 
 QUALITY_SCRIPT_ALIASES: dict[str, tuple[str, ...]] = {
     "build": ("build", "compile"),
@@ -43,6 +44,52 @@ QUALITY_SCRIPT_ALIASES: dict[str, tuple[str, ...]] = {
     "e2e": ("test:e2e", "e2e", "playwright", "cypress"),
     "format": ("format", "format:check", "check:format"),
     "dev": ("dev", "start:dev"),
+}
+# Scripts that run a type checker satisfy the typecheck gate even under another name.
+TYPECHECK_COMMAND = re.compile(r"(?<![\w-])(tsc|vue-tsc|svelte-check|astro check)(?![\w-])")
+TASK_RUNNER_FILES = ("Makefile", "makefile", "GNUmakefile", "justfile", "Justfile")
+TASK_TARGET = re.compile(r"^([A-Za-z0-9][\w.-]*)(?:\s+[^:=\n]*)?:(?!=)", re.M)
+# Commands implied by a stack manifest; unverified until run.
+STACK_CONVENTIONS: dict[str, list[tuple[str, str, str | None]]] = {
+    "Cargo.toml": [
+        ("build", "cargo build", None),
+        ("typecheck", "cargo check", None),
+        ("lint", "cargo clippy", None),
+        ("test", "cargo test", None),
+        ("format", "cargo fmt --check", None),
+    ],
+    "go.mod": [
+        ("build", "go build ./...", None),
+        ("typecheck", "go build ./...", None),
+        ("lint", "go vet ./...", None),
+        ("test", "go test ./...", None),
+    ],
+    "pyproject.toml": [
+        ("build", "python -m build", "[build-system]"),
+        ("test", "pytest", "pytest"),
+        ("lint", "ruff check", "ruff"),
+        ("format", "ruff format --check", "ruff"),
+        ("typecheck", "mypy", "mypy"),
+        ("typecheck", "pyright", "pyright"),
+    ],
+}
+# A manifest alone does not make a server; look for a web framework dependency.
+SERVER_MANIFEST_MARKERS: dict[str, tuple[str, ...]] = {
+    "Cargo.toml": ("axum", "actix-web", "rocket", "warp", "poem", "salvo", "tide"),
+    "pyproject.toml": ("fastapi", "flask", "django", "starlette", "aiohttp", "litestar", "sanic"),
+    "requirements.txt": ("fastapi", "flask", "django", "starlette", "aiohttp", "litestar", "sanic"),
+    "go.mod": ("gin-gonic/gin", "labstack/echo", "gofiber/fiber", "go-chi/chi", "gorilla/mux"),
+    "pom.xml": ("spring-boot-starter-web", "quarkus", "micronaut"),
+    "build.gradle": ("spring-boot-starter-web", "ktor-server"),
+    "build.gradle.kts": ("spring-boot-starter-web", "ktor-server"),
+}
+SITE_DEPENDENCIES = {
+    "astro", "@astrojs/starlight", "@docusaurus/core", "vitepress", "vuepress", "nextra", "fumadocs-core",
+    "gatsby", "@11ty/eleventy", "hexo", "@next/mdx", "next-mdx-remote", "contentlayer",
+}
+SITE_CONFIG_FILES = {
+    "mkdocs.yml", "mkdocs.yaml", "book.toml", "hugo.toml", "hugo.yaml", "_config.yml",
+    "docusaurus.config.js", "docusaurus.config.ts", "astro.config.mjs", "astro.config.ts",
 }
 
 AUTH_DEPENDENCIES = {
@@ -130,7 +177,7 @@ def safe_json(path: Path) -> dict[str, Any] | None:
 def walk_files(root: Path) -> list[Path]:
     result: list[Path] = []
     for current, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith(".git")]
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
         base = Path(current)
         for name in files:
             result.append(base / name)
@@ -244,22 +291,67 @@ def select_dependencies(deps: set[str], known: set[str]) -> list[str]:
     return sorted(deps & known)
 
 
-def quality_command_facts(scripts: dict[str, list[dict[str, str]]]) -> dict[str, Any]:
-    found: dict[str, list[dict[str, str]]] = {}
-    script_names = set(scripts)
+def capability_for(name: str) -> str | None:
     for capability, aliases in QUALITY_SCRIPT_ALIASES.items():
-        matches: list[dict[str, str]] = []
-        for name in script_names:
-            if name in aliases or any(name.startswith(alias + ":") for alias in aliases):
-                for item in scripts[name]:
-                    matches.append({"script": name, **item})
-        if matches:
-            found[capability] = matches
+        if name in aliases or any(name.startswith(alias + ":") for alias in aliases):
+            return capability
+    return None
+
+
+def task_runner_candidates(root: Path) -> list[dict[str, str]]:
+    candidates: list[dict[str, str]] = []
+    for filename in TASK_RUNNER_FILES:
+        path = root / filename
+        if not path.is_file() or path.stat().st_size > MAX_TEXT_SCAN_BYTES:
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for target in dict.fromkeys(TASK_TARGET.findall(text)):
+            capability = capability_for(target)
+            if capability:
+                candidates.append({"capability": capability, "script": target, "path": filename,
+                                   "command": f"{'make' if 'make' in filename.lower() else 'just'} {target}",
+                                   "source": "task-runner", "evidence": f"{filename}#{target}"})
+    return candidates
+
+
+def stack_convention_candidates(root: Path) -> list[dict[str, str]]:
+    candidates: list[dict[str, str]] = []
+    for manifest, commands in STACK_CONVENTIONS.items():
+        path = root / manifest
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore") if path.stat().st_size <= MAX_TEXT_SCAN_BYTES else ""
+        for capability, command, marker in commands:
+            if marker is None or marker in text:
+                candidates.append({"capability": capability, "script": command, "path": manifest, "command": command,
+                                   "source": "convention", "evidence": f"{manifest} (convention: {command})"})
+    return candidates
+
+
+def quality_command_facts(scripts: dict[str, list[dict[str, str]]], extra: list[dict[str, str]]) -> dict[str, Any]:
+    found: dict[str, list[dict[str, str]]] = {}
+    for name, items in scripts.items():
+        capability = capability_for(name)
+        for item in items:
+            match = {"script": name, **item, "source": "package-script",
+                     "evidence": f"{item['path']}#scripts.{name}"}
+            if capability:
+                found.setdefault(capability, []).append(match)
+            if capability != "typecheck" and TYPECHECK_COMMAND.search(item["command"]):
+                found.setdefault("typecheck", []).append({**match, "note": "type checker runs inside this script"})
+    for candidate in extra:
+        capability = candidate["capability"]
+        found.setdefault(capability, []).append({k: v for k, v in candidate.items() if k != "capability"})
     core = ("build", "lint", "typecheck", "test")
     missing = [name for name in core if name not in found]
+    convention_only = sorted(
+        name for name in core
+        if name in found and all(match["source"] == "convention" for match in found[name])
+    )
     return {
         "found": found,
         "missing_core": missing,
+        "convention_only": convention_only,
         "core_coverage": len(core) - len(missing),
         "core_total": len(core),
     }
@@ -270,13 +362,16 @@ def first_existing(rel_paths: set[str], candidates: tuple[str, ...]) -> str | No
 
 
 def detect_vendor_paths(rel_paths: set[str]) -> dict[str, list[str]]:
+    def named(p: str, filename: str) -> bool:
+        return Path(p).name.lower() == filename
+
     rules = {
-        "canonical": lambda p: p.endswith("AGENTS.md") or "/skills/" in f"/{p}",
-        "claude": lambda p: p.endswith("CLAUDE.md") or p.startswith(".claude/"),
+        "canonical": lambda p: named(p, "agents.md") or "/skills/" in f"/{p}",
+        "claude": lambda p: named(p, "claude.md") or p.startswith(".claude/"),
         "cursor": lambda p: p.startswith(".cursor/") or p == ".cursorrules",
         "github-copilot": lambda p: p == ".github/copilot-instructions.md" or p.startswith(".github/instructions/") or p.startswith(".github/agents/"),
         "opencode": lambda p: p.startswith(".opencode/") or p in {"opencode.json", "opencode.jsonc"},
-        "gemini": lambda p: p.endswith("GEMINI.md") or p.startswith(".gemini/"),
+        "gemini": lambda p: named(p, "gemini.md") or p.startswith(".gemini/"),
         "windsurf": lambda p: p.startswith(".windsurf/") or p == ".windsurfrules",
         "cline": lambda p: p.startswith(".clinerules/") or p == ".clinerules",
         "aider": lambda p: p.startswith(".aider") or p == "CONVENTIONS.md",
@@ -449,27 +544,31 @@ def main() -> int:
 
     vendor_paths = detect_vendor_paths(rel_paths)
     agent_paths = sorted({path for paths in vendor_paths.values() for path in paths})
-    quality = quality_command_facts(pkg["scripts"])
+    quality = quality_command_facts(pkg["scripts"], task_runner_candidates(root) + stack_convention_candidates(root))
     auth_dependencies = select_dependencies(deps, AUTH_DEPENDENCIES)
     database_dependencies = select_dependencies(deps, DATABASE_DEPENDENCIES)
     test_dependencies = select_dependencies(deps, TEST_DEPENDENCIES)
     event_dependencies = select_dependencies(deps, EVENT_DEPENDENCIES)
 
-    public_content_candidate = any(
+    # Markdown under docs/ is often internal; require a site generator before assuming public content.
+    site_generator_evidence = sorted((deps & SITE_DEPENDENCIES) | (names & SITE_CONFIG_FILES))
+    public_content_candidate = bool(site_generator_evidence) and any(
         p.endswith((".md", ".mdx"))
         and any(part in {"docs", "content", "pages", "posts"} for part in Path(p).parts[:-1])
         for p in rel_paths
     )
+    server_manifest_evidence = []
+    for path in files:
+        markers = SERVER_MANIFEST_MARKERS.get(path.name)
+        if markers and any(bounded_text_contains(path, (marker,)) for marker in markers):
+            server_manifest_evidence.append(rel(path, root))
     web_candidate = bool(set(frameworks) & web_frameworks)
-    server_candidate = bool(
-        set(frameworks) & server_frameworks
-        or {"pyproject.toml", "Cargo.toml", "go.mod", "pom.xml", "build.gradle"} & names
-        or api_route_paths
-    )
+    server_candidate = bool(set(frameworks) & server_frameworks or server_manifest_evidence or api_route_paths)
 
     warnings = [
         "Heuristic inventory only; verify high-impact findings in source files.",
-        "Scratch and prior assessment directories are excluded; package command detection mainly covers JavaScript manifests.",
+        "Scratch and prior assessment directories are excluded. Commands come from package scripts, root Makefile or "
+        "justfile targets, and Cargo, Go, or Python conventions; convention commands are unverified until run.",
         "The inspector does not execute commands, inspect secret values, or prove authorization behavior.",
     ]
     if git["tracked_sensitive_paths"]:
@@ -507,6 +606,8 @@ def main() -> int:
             "web_candidate": web_candidate,
             "server_candidate": server_candidate,
             "public_content_candidate": public_content_candidate,
+            "site_generator_evidence": site_generator_evidence,
+            "server_manifest_evidence": sorted(server_manifest_evidence)[:20],
             "api_route_candidate": bool(api_route_paths),
             "event_driven_candidate": bool(event_dependencies or integration_signals["asyncapi"]),
             "auth_candidate": bool(auth_dependencies),

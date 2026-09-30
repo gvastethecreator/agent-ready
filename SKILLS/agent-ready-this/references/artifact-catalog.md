@@ -14,13 +14,9 @@ The first evidence-backed recommendation set. It must be produced before asking 
 
 Grill Gate result plus only the material questions that remain after repository and conversation-context suppression.
 
-### `decision-log.json` and `recommendations.final.json`
+### Decision log, final recommendations, manifest
 
-Resolved answers, inferred facts, safe defaults, deferred choices, and the recommendation changes caused by them.
-
-### `manifest.json` and `receipt.json`
-
-Planned file operations, ownership, sources, hashes, validation criteria, command outcomes, residual risk, and drift state.
+Not produced by the helper. Record resolved answers, defaults, and planned file operations in the project's existing task record; write a separate manifest only when an existing workflow requires one.
 
 ## Development-agent plane
 
@@ -79,7 +75,7 @@ A discovery layer for publishing and finding agentic resources such as MCP serve
 ## Relationships
 
 ```text
-audit -> preliminary recommendations -> Grill Gate/Session -> final recommendations -> manifest
+audit -> preliminary recommendations -> Grill Gate/Session -> agent-reviewed plan in the task record
 AGENTS.md + Skills       -> teach coding agents how to work on the repo
 llms.txt + API schemas   -> help agents discover and understand public capabilities
 WebMCP                   -> invoke capabilities inside the live page
@@ -87,5 +83,5 @@ MCP                      -> invoke capabilities outside the page
 MCP Apps / A2UI          -> render richer agent-facing UI
 A2A                      -> delegate tasks to an independent agent
 ARD                      -> discover which resource/protocol exists before invocation
-receipt + drift state    -> prove what was applied and whether it remains current
+agent-ready-site         -> verify the deployed site from the outside
 ```

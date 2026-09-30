@@ -2,7 +2,7 @@
 
 Annotate a real `<form>` so the browser synthesizes a tool from its fields. Prefer this when the human path is already a form. Imperative tools stay for JS-only jobs.
 
-Sources checked 2026-09-08: [Chrome declarative guide](https://developer.chrome.com/docs/ai/webmcp/declarative-api) and [explainer](https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md). Recheck against the target browser before implementation.
+Sources checked 2026-09-30: [Chrome declarative guide](https://developer.chrome.com/docs/ai/webmcp/declarative-api) (updated 2026-09-25) and [explainer](https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md). Recheck against the target browser before implementation.
 
 The community draft leaves parts of form synthesis unspecified. Chrome documents an experimental implementation. Keep markup valid HTML even if the agent never sees it.
 
@@ -86,6 +86,6 @@ Navigation result handling is not an interoperable JSON-LD contract. Verify the 
 
 ## Lifecycle
 
-Keep tool attributes stable during form fill. Verify removal, reset, and user cancellation in the target browser; distinguish form cancellation from a server operation that already committed.
+Keep tool attributes stable during form fill. `document.modelContext` fires `toolactivated` after the browser pre-fills fields and `toolcancel` when the user cancels or the form is reset; both carry `toolName` and are not cancelable. Use them to sync visible state, not to authorize. Distinguish form cancellation from a server operation that already committed.
 
 Inspect the synthesized tool and its required fields in the target browser. Verify discovery and execution rather than assuming parity with imperative tools.

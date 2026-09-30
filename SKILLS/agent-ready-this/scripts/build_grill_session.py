@@ -8,13 +8,14 @@ import json
 from pathlib import Path
 from typing import Any
 
-GENERATOR = "agent-ready-this@0.2.0-plan"
+GENERATOR = "agent-ready-this@0.3.0-plan"
 
 QUESTION_SPECS: dict[str, dict[str, Any]] = {
     "quality_commands": {
         "id": "G-01",
         "category": "commands-and-validation",
-        "severity": "blocking",
+        # A heuristic command gap is resolved from CI, README, and task runners first; it is not a user blocker.
+        "severity": "major",
         "materiality": 8,
         "question": "Which install, build, lint, typecheck, and test commands are authoritative when the repository does not expose a complete verified set?",
         "why_it_matters": "Agents cannot safely claim completion or CI parity when the quality contract is ambiguous.",
