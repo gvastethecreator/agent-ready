@@ -16,7 +16,7 @@ Limits: <evidence not collected and why>.
 ## Job matrix
 | Job | Crawler | Fetch | Browser | Programmatic |
 |---|---|---|---|---|
-| Find Pro price | pass (probed) | degraded: 41k tokens, no markdown (probed) | pass (task) | n/a |
+| <job> | <outcome; observation> | <outcome; observation> | <outcome; tested mode> | <outcome or n/a> |
 
 ## Findings
 ### F1 <title> — <critical|high|medium|low>
@@ -36,20 +36,18 @@ Limits: <evidence not collected and why>.
 
 ## Ranking
 
-- `critical`: blocks a job for a class the owner wants.
-- `high`: completes only degraded for a wanted class (JS-only facts, triple token cost, ambiguous controls needing a guess), or a policy contradiction (E1, E2).
-- `medium`: discoverability or efficiency losses without a blocked job.
-- `low`: hygiene.
+- Use the project's severity rubric when one exists. Otherwise explain impact using the intended job, affected audience and available workaround.
+- Rank observed blocked or incorrect outcomes ahead of speculative efficiency gains. An absent optional format or estimated token ratio does not establish severity.
 
-Order by severity, then by count of affected job × class cells, then lower effort first. Put unwanted classes and owner-policy choices under decisions, not findings.
+Use remediation effort as a tie-breaker. Put unknown intent and owner-policy choices under decisions, not defects.
 
 ## Optional score
 
-Only when the user asks. Method: applicable job × class cells; `pass` = 1, `degraded` = 0.5, `fail` = 0; exclude `unknown` and `n/a` and state how many were excluded. Show the denominator. A critical finding is listed beside the score, never averaged away.
+Only when the user asks. This is a local heuristic, not a standard or predictor: `pass` = 1, `degraded` = 0.5, `fail` = 0 across applicable job × class cells. Exclude and count `unknown` and `n/a`; show the denominator and material blockers beside the score.
 
 ## Scanner crosswalk
 
-Map public scanners such as Cloudflare's isitagentready.com so the user can predict their result without chasing points:
+Use this topical crosswalk only when relevant. Read the actual scanner result and version/date before describing its coverage or score:
 
 | Scanner category | Checks here |
 |---|---|
@@ -59,4 +57,4 @@ Map public scanners such as Cloudflare's isitagentready.com so the user can pred
 | Capabilities: Agent Skills, API catalog, OAuth discovery, MCP server card, WebMCP | D6, D1, D3, D2, C7 |
 | Commerce (non-scoring): x402, UCP, ACP | D7 |
 
-Scanners do not see A2 edge behavior by class, A3 soft 404s, B1 JS-only facts, B3 cost, C operate results, or E contradictions. Recommend a scanner item only when a wanted class uses it for a job.
+Do not infer a scanner's blind spots or predict its grade from this list. A scanner result does not replace the requested job evidence. Recommend an item only for a concrete consumer and job.

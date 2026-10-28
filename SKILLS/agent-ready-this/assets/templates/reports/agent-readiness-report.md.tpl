@@ -54,9 +54,9 @@
 
 {{checks}}
 
-## Readiness score and critical gates
+## Readiness evidence and required gates
 
-{{score_and_critical_gates}}
+{{evidence_and_unresolved_gates_score_only_if_requested}}
 
 ## Safe next action
 

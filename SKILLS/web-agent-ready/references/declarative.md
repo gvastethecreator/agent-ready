@@ -2,7 +2,7 @@
 
 Annotate a real `<form>` so the browser synthesizes a tool from its fields. Prefer this when the human path is already a form. Imperative tools stay for JS-only jobs.
 
-Sources checked 2026-09-30: [Chrome declarative guide](https://developer.chrome.com/docs/ai/webmcp/declarative-api) (updated 2026-09-25) and [explainer](https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md). Recheck against the target browser before implementation.
+[Chrome's declarative guide](https://developer.chrome.com/docs/ai/webmcp/declarative-api) was rechecked 2026-10-26; its update date remains 2026-09-25. The [explainer](https://github.com/webmachinelearning/webmcp/blob/main/declarative-api-explainer.md) provides design context. Recheck the target browser before implementation.
 
 The community draft leaves parts of form synthesis unspecified. Chrome documents an experimental implementation. Keep markup valid HTML even if the agent never sees it.
 
@@ -43,7 +43,7 @@ The community draft leaves parts of form synthesis unspecified. Chrome documents
 </form>
 ```
 
-- `toolname`: same rules as imperative `name` (kebab-case job id).
+- `toolname`: a stable operation name following the target contract's restrictions; kebab-case is a local convention, not a platform requirement.
 - `tooldescription`: when to use the form-tool.
 - `toolautosubmit`: boolean. Agent may submit after fill without a human click. Omit for money, legal, delete, or send-to-others.
 - `toolparamdescription` on each named control: schema property description.

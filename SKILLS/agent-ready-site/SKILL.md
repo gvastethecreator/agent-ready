@@ -22,37 +22,39 @@ Audit a live website or web app the way agents meet it: over HTTP, in a browser,
 
 | Class | Reaches the site as | Needs |
 |---|---|---|
-| crawler | GPTBot, ClaudeBot, OAI-SearchBot, PerplexityBot; robots-governed, raw HTML, usually no JS | access, server-rendered facts, sitemap |
-| fetch | ChatGPT-User, Claude-User, coding-agent fetch tools; one URL for one user, usually no JS, may send `Accept: text/markdown`, truncates long pages | no WAF block, markdown or clean HTML, low token cost |
-| browser | computer-use and browser agents; rendered DOM, accessibility tree, screenshots, the user's session | names and roles, labeled forms, state in URL, no blockers |
-| programmatic | API or MCP clients, headless | discovery, delegated auth, contracts, machine-readable errors |
+| crawler | automated retrieval under the client's documented crawl policy | allowed access, discoverable pages, facts in the representation it reads |
+| fetch | user-directed URL retrieval, with client-specific headers, rendering and size limits | readable facts within those limits |
+| browser | rendered page through the tested DOM, accessibility or screenshot interface | usable controls, feedback and required session state |
+| programmatic | API or MCP client | a needed contract, discovery and authorization |
+
+Name the actual client when known. A synthetic user-agent header does not establish that client's identity, capabilities or success.
 
 ## Process
 
 1. **Frame the jobs.**
    - Establish origin, site type (content, docs, commerce, SaaS app, API product), owner intent toward each class (welcome, selective, restrict), source repo, and test account.
-   - Pick 3–5 jobs: read jobs ("find the Pro plan price") and do jobs ("filter shoes to size 42", "book a demo up to the confirm step"). Take them from the user; otherwise derive them from navigation, sitemap, and primary calls to action, and label them as assumptions.
-   - When intent is unknown, audit for "welcome" and report policy choices as owner decisions, not defects.
+   - Pick a bounded sample of read jobs ("find the Pro plan price") and do jobs ("filter shoes to size 42", "book a demo up to the confirm step"). Use the user's jobs or label derived jobs as assumptions. State what the sample excludes.
+   - Keep unknown owner intent explicit; policy choices need an owner decision before being called defects.
    - Done when each job has start URL, agent classes, success signal (fact string or end state), and a stop point before any consequential effect.
 
 2. **Probe over HTTP.**
-   - Run `python <skill-root>/scripts/probe_site.py <url> --out <new-dir>/probe.json`, with `--page` for each job start URL and `--expect "<path>::<fact>"` for each read-job fact. Add `--ua-matrix` for the user's own site or when the tool user agent is challenged. Write evidence to the project's scratch area or the session scratchpad, never inside the skill.
+   - Run `python <skill-root>/scripts/probe_site.py <url> --out <new-dir>/probe.json`, with `--page` for each job start URL and `--expect "<path>::<fact>"` for each read-job fact. Use `--ua-matrix` only for an authorized, planned comparison of header-based rules on the user's site. Write evidence to the project's scratch area or the session scratchpad, never inside the skill.
    - Pass `--page` and `--expect` targets as full URLs in Git Bash or MSYS shells, which rewrite arguments that start with `/`.
-   - A challenged or soft-404 result invalidates presence checks: rerun with `--ua browser` to separate access from read.
+   - Preserve denials, challenges and rate limits. Do not change user agent, browser, tool or identity to recover denied content. Inspect allowed source/config evidence instead. A soft 404 needs content checks; an allowed JS shell needs rendered verification, not a different header.
    - Judge results with [checks.md](references/checks.md) layers A, B, D, and E.
    - Done when every job start URL has probe evidence or a recorded reason (network, challenge, auth).
 
 3. **Verify reads.**
-   - Each read-job fact must appear in visible raw text, with its label and unit, and in the markdown variant when one exists. A fact present only in script payloads counts as missing for crawlers and fetch agents.
+   - Check each fact with its label and unit in the representation the named client reads. The helper's raw-text check cannot establish success for a rendering client. A fact found only in script payloads is missing from the helper's extracted text.
    - Confirm a missing fact in the rendered page before calling it JS-only. Check that markdown carries the same content as HTML.
    - Done when each read job has `pass | degraded | fail | unknown` for the crawler and fetch classes, with evidence.
 
 4. **Run the operate test.**
-   - Follow [operate-test.md](references/operate-test.md): one browser surface, one desktop viewport, and navigation by accessibility-tree names and roles. Evaluate `scripts/dom_probe.js` on each job's start view.
+   - Follow [operate-test.md](references/operate-test.md): one supported browser surface and one desktop viewport. Name the tested interaction mode. `scripts/dom_probe.js` is an approximate DOM diagnostic, not the browser's computed accessibility tree.
    - Done when each do job has a browser-class outcome, the step where it failed, and the blocking element.
 
 5. **Check programmatic and policy surfaces.**
-   - Apply layer D where programmatic agents fit the site type or jobs. Apply layer E on every audit: robots, Content Signals, WAF behavior, and terms must agree with owner intent.
+   - Apply layer D only for a concrete programmatic consumer and job. Optional surfaces are not missing requirements by default. In layer E compare observed policy signals with known owner intent.
    - Classify speculative formats with [standards.json](references/standards.json) `policy: avoid` as "not recommended", never as gaps. Recheck an entry's source before it drives a recommendation.
    - Done when each applicable D and E check is `pass | fail | unknown | not-applicable` with a reason.
 
@@ -63,7 +65,7 @@ Audit a live website or web app the way agents meet it: over HTTP, in a browser,
 
 ## Evidence levels
 
-`probed` (HTTP observed) · `rendered` (DOM or accessibility tree observed) · `task` (job attempted end to end up to the stop point) · `source` (code, config, or dashboard read) · `inferred` (docs or convention; always labeled). A claim is bounded by the highest level actually observed.
+`probed` (HTTP observed) · `rendered` (DOM or accessibility tree observed) · `task` (job attempted up to the stop point) · `source` (code, config, or dashboard read) · `inferred` (docs or convention; label it). These support different claims: source inspection does not prove runtime success, and a generic probe does not prove a named vendor client works.
 
 ## Resources
 

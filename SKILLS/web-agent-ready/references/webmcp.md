@@ -2,7 +2,7 @@
 
 ## Check the target contract
 
-Reviewed 2026-09-30 against [Chrome's imperative guide](https://developer.chrome.com/docs/ai/webmcp/imperative-api) updated 2026-09-21 and the [community draft](https://webmachinelearning.github.io/webmcp/). Chrome gates:
+Reviewed 2026-10-26 against [Chrome's imperative guide](https://developer.chrome.com/docs/ai/webmcp/imperative-api) updated 2026-10-16 and the relevant registration/execution sections of the [community draft](https://webmachinelearning.github.io/webmcp/). Chrome gates:
 
 - `executeTool(tool, args, options)` takes a JSON-serializable object. JSON-stringified arguments are deprecated from Chrome 155; builds before 155 may still require them.
 - From Chrome 153, unregistering a tool does not cancel in-flight execution. Treat removal and cancellation as separate operations.

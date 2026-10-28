@@ -5,21 +5,16 @@ Tools run page JS with the user's cookies and UI. Treat every tool as a public m
 Spec privacy: https://webmachinelearning.github.io/webmcp/
 Chrome: https://developer.chrome.com/docs/ai/webmcp
 
-## Origin isolation
+## Document and origin boundaries
 
-WebMCP requires an origin-keyed agent cluster (`document.domain` disabled).
-
-- Do not set `Origin-Agent-Cluster: ?0`.
-- Do not assign `document.domain`.
-- `file:` is the documented exception for local files.
-
-If isolation is off, `registerTool` rejects with `SecurityError`. Fix the document; do not catch-and-ignore.
+Reviewed 2026-10-26: the community draft checks an active owner document and permission to use `tools`; cross-origin exposure checks potentially trustworthy origin URLs. Diagnose the actual rejection against the target browser contract. Do not infer an isolation failure from `SecurityError` alone or change isolation headers, `document.domain`, or permissions merely to silence it. Preserve the error and resolve the affected boundary within scope.
 
 ## Permissions-Policy `tools`
 
 Default allowlist `'self'`: top-level and same-origin frames may register. Cross-origin iframes are off.
 
-- Enable a child: `<iframe src="https://agent.example/" allow="tools">` plus `exposedTo: ["https://agent.example"]` on tools that child may call.
+- `allow="tools"` delegates the feature to a child frame; it does not by itself expose another document's tools.
+- For cross-origin discovery, the provider names the consumer in `exposedTo`, and the consumer requests the provider in `getTools({ fromOrigins })`. Check both directions against the intended origins before changing policy.
 - Disable on this origin: `Permissions-Policy: tools=()`. Use only when the product must not expose tools.
 
 `registerTool` rejects with `NotAllowedError` when the policy denies the document.

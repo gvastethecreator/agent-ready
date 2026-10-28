@@ -8,7 +8,7 @@
     "conditional": "Recommend only when the entry's condition holds.",
     "report-only": "Report presence; recommend only for an explicit product goal.",
     "not-applicable-unless": "Skip unless the entry's condition holds.",
-    "avoid": "No documented consumer. Never recommend; flag when present only if it causes cloaking, drift, or maintenance cost."
+    "avoid": "Local default: do not add without a demonstrated consumer need and source review. Existing presence alone is not a defect."
   },
   "capabilities": [
     {
@@ -16,7 +16,8 @@
       "label": "robots.txt",
       "check": "A1",
       "maturity": "RFC 9309",
-      "consumers": "Crawlers; some user-initiated fetchers.",
+      "reviewed_on": "2026-10-26",
+      "consumers": "Crawlers implementing the protocol; user-directed fetch policy is client-specific.",
       "policy": "baseline",
       "source": "https://www.rfc-editor.org/rfc/rfc9309"
     },
@@ -35,7 +36,7 @@
       "label": "IETF AI Preferences vocabulary",
       "check": "E1",
       "maturity": "IETF working-group draft.",
-      "consumers": "None confirmed.",
+      "consumers": "Consumer support is not established by this index; verify before recommending.",
       "policy": "report-only",
       "source": "https://datatracker.ietf.org/wg/aipref/about/"
     },
@@ -75,27 +76,29 @@
       "label": "Markdown content negotiation (Accept: text/markdown)",
       "check": "B2",
       "maturity": "HTTP content negotiation (RFC 9110); CDN support such as Cloudflare Markdown for Agents.",
-      "consumers": "Claude Code, OpenCode, and Cursor send Accept: text/markdown by default (Cloudflare, 2026-04).",
+      "consumers": "Clients that request this representation; verify the actual client's headers and behavior.",
       "policy": "recommended",
-      "condition": "Fetch agents are a wanted class.",
+      "condition": "A named consumer needs this representation and content parity can be maintained.",
       "source": "https://blog.cloudflare.com/agent-readiness/"
     },
     {
       "id": "markdown-alternate",
       "label": "Declared markdown alternate (link rel=alternate type=text/markdown, .md routes)",
       "check": "B2",
-      "maturity": "Convention; .md routes come from the llms.txt proposal.",
+      "maturity": "Convention documented by the llms.txt proposal.",
+      "reviewed_on": "2026-10-26",
       "consumers": "Tools that read head links or follow llms.txt links.",
       "policy": "recommended",
-      "condition": "Fetch agents are a wanted class.",
+      "condition": "A named consumer can discover and use the alternate.",
       "source": "https://llmstxt.org/"
     },
     {
       "id": "llms-txt",
       "label": "llms.txt",
       "check": "B6",
-      "maturity": "Proposal.",
-      "consumers": "Tools and agents pointed at it by a user or doc; few crawlers fetch it unprompted.",
+      "maturity": "Proposal v2; root or subpath index. H1 required; summary and link sections optional.",
+      "reviewed_on": "2026-10-26",
+      "consumers": "Verify the intended client's discovery and use; file presence is not adoption proof.",
       "policy": "conditional",
       "condition": "Docs, developer, or API product, or a content site with a curated index worth maintaining.",
       "source": "https://llmstxt.org/"
@@ -117,10 +120,11 @@
       "label": "schema.org JSON-LD",
       "check": "B7",
       "maturity": "schema.org vocabulary.",
-      "consumers": "Search engines. A 2025 controlled test found major assistants missed product facts present only in JSON-LD.",
+      "reviewed_on": "2026-10-26",
+      "consumers": "Structured-data consumers; parsing vocabulary does not prove a particular assistant extracts facts.",
       "policy": "recommended",
       "condition": "Supports visible facts; never the only copy of a fact.",
-      "source": "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms"
+      "source": "https://schema.org/docs/gs.html"
     },
     {
       "id": "api-catalog",
@@ -194,10 +198,11 @@
       "id": "mcp-server",
       "label": "Remote MCP server",
       "check": "D2",
-      "maturity": "Open protocol, spec 2026-07-28.",
+      "maturity": "Versioned open protocol; verify the selected client/server contract.",
+      "reviewed_on": "2026-10-26",
       "consumers": "MCP hosts and programmatic agents.",
       "policy": "conditional",
-      "condition": "Jobs that should run without an open page.",
+      "condition": "A concrete MCP consumer/job benefits beyond the existing interface.",
       "source": "https://modelcontextprotocol.io/specification/2026-07-28"
     },
     {
@@ -205,7 +210,7 @@
       "label": "MCP server card",
       "check": "D2",
       "maturity": "MCP SEP draft (SEP-1649, SEP-2127); the path changed between drafts.",
-      "consumers": "Some MCP clients and agent-readiness scanners.",
+      "consumers": "Verify the chosen client's support for the exact draft and discovery path.",
       "policy": "conditional",
       "condition": "A remote MCP server exists.",
       "probe_paths": ["/.well-known/mcp/server-card.json", "/.well-known/mcp-server-card", "/.well-known/mcp/catalog.json"],
@@ -217,7 +222,7 @@
       "label": "Agent Skills discovery index",
       "check": "D6",
       "maturity": "Emerging discovery proposal.",
-      "consumers": "Agent-readiness scanners; some coding agents.",
+      "consumers": "Verify the intended client's support for this discovery format.",
       "policy": "conditional",
       "condition": "Developer product that publishes Agent Skills.",
       "probe_paths": ["/.well-known/agent-skills/index.json"],
@@ -228,7 +233,7 @@
       "id": "a2a-agent-card",
       "label": "A2A agent card",
       "check": "D5",
-      "maturity": "A2A 1.0.0.",
+      "maturity": "Versioned open protocol; verify the deployed contract.",
       "consumers": "A2A clients delegating tasks.",
       "policy": "not-applicable-unless",
       "condition": "The product is an agent with a task lifecycle.",
@@ -241,7 +246,7 @@
       "label": "Agentic Resource Discovery catalog",
       "check": "D1",
       "maturity": "Emerging open specification.",
-      "consumers": "Unconfirmed.",
+      "consumers": "Consumer support is not established by this index; verify before recommending.",
       "policy": "report-only",
       "source": "https://developers.googleblog.com/announcing-the-agentic-resource-discovery-specification/"
     },
@@ -250,6 +255,7 @@
       "label": "WebMCP in-page tools",
       "check": "C7",
       "maturity": "Proposed; Chrome origin trial.",
+      "reviewed_on": "2026-10-26",
       "consumers": "Browser agents in supporting Chrome builds.",
       "policy": "report-only",
       "condition": "Recommend only for repeated, high-value do jobs; implementation belongs to web-agent-ready.",
@@ -287,7 +293,7 @@
       "label": "ai.txt or /.well-known/ai.txt",
       "check": "E1",
       "maturity": "Competing proposals.",
-      "consumers": "None documented.",
+      "consumers": "No consumer evidence is recorded here; this is not proof that none exists.",
       "policy": "avoid",
       "source": "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms"
     },
@@ -295,8 +301,8 @@
       "id": "meta-llms",
       "label": "meta name=llms or meta name=ai-content-url",
       "check": "B2",
-      "maturity": "WHATWG request closed as not planned; no specification for ai-content-url.",
-      "consumers": "None documented.",
+      "maturity": "Local non-default; verify any claimed format against its primary specification.",
+      "consumers": "No consumer evidence is recorded here; this is not proof that none exists.",
       "policy": "avoid",
       "source": "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms"
     },
@@ -305,7 +311,7 @@
       "label": "HTML comments, hidden text, or AI-only pages addressed to agents",
       "check": "E2",
       "maturity": "Folk practice.",
-      "consumers": "None documented; parsers strip comments. Hidden agent-only text is a cloaking and injection risk.",
+      "consumers": "Hidden instructions are untrusted content; assess their actual effect and content parity.",
       "policy": "avoid",
       "source": "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms"
     },
@@ -313,8 +319,8 @@
       "id": "ua-sniffed-markdown",
       "label": "Markdown served by user-agent sniffing",
       "check": "E2",
-      "maturity": "Anti-pattern.",
-      "consumers": "Treated as cloaking by search engines. Use Accept negotiation instead.",
+      "maturity": "Local non-default representation strategy.",
+      "consumers": "Header selection alone does not prove deceptive cloaking. Prefer explicit negotiation/discovery where the consumer supports it.",
       "policy": "avoid",
       "source": "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms"
     }

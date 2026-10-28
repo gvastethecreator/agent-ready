@@ -87,12 +87,21 @@ def _result(url, status, final_url, headers, raw: bytes, started: float) -> dict
     encoding = (headers.get("Content-Encoding") or "").lower()
     note = None
     try:
+        wbits = None
         if raw[:2] == b"\x1f\x8b" or encoding == "gzip":
-            raw = zlib.decompress(raw, 16 + zlib.MAX_WBITS)
+            wbits = 16 + zlib.MAX_WBITS
         elif encoding == "deflate":
-            raw = zlib.decompress(raw, -zlib.MAX_WBITS)
+            wbits = -zlib.MAX_WBITS
+        if wbits is not None:
+            decoder = zlib.decompressobj(wbits)
+            decoded = decoder.decompress(raw, MAX_BODY + 1)
+            if len(decoded) <= MAX_BODY and not decoder.eof:
+                raise zlib.error("incomplete compressed body")
+            raw = decoded
     except zlib.error:
         note = f"could not decode {encoding or 'gzip'} body"
+    truncated = truncated or len(raw) > MAX_BODY
+    raw = raw[:MAX_BODY]
     if encoding == "br":
         note = "brotli body not decodable with the standard library"
     ctype = (headers.get("Content-Type") or "").lower()
@@ -193,7 +202,7 @@ def _rule_regex(pattern: str) -> re.Pattern:
 
 
 def robots_verdict(groups: list[dict], token: str, path: str) -> dict:
-    """RFC 9309: product-token group else '*'; longest match wins; allow wins ties."""
+    """Partial rule estimate; not full RFC 9309 matching or crawler-policy proof."""
     matched = [g for g in groups if any(a.split("/")[0] == token for a in g["agents"])]
     source = token
     if not matched:
@@ -223,7 +232,7 @@ def probe_robots(fetch: Fetcher, origin: str, agents: list[dict], paths: list[st
         out["rfc9309_effect"] = "unavailable: compliant crawlers may access everything"
         return out, []
     if looks_like_html(body):
-        out["rfc9309_effect"] = "HTML served at /robots.txt; no parseable rules"
+        out["rfc9309_effect"] = "HTML served at /robots.txt; inspect parseable rules before inferring policy"
         return out, []
     groups, sitemaps = parse_robots(body)
     out["groups"] = [{"agents": g["agents"], "rules": len(g["rules"]), "content_signal": g["content_signal"]}
@@ -803,8 +812,8 @@ def main(argv: list[str] | None = None) -> int:
     blocked = [p for p in report.get("pages", [])
                if p.get("challenge_suspected") or (p.get("html") or {}).get("js_shell_suspected")]
     if blocked and args.ua == "tool":
-        report["limits"].append("Content checks hit a challenge or JS shell; rerun with --ua browser to separate "
-                                "access from read.")
+        report["limits"].append("Challenge or JS-shell heuristic detected. Preserve access denials; rendered "
+                                "verification needs an allowed browser path, not a user-agent retry.")
     report["requests"] = {"used": fetch.used, "limit": args.max_requests}
 
     out_path.parent.mkdir(parents=True, exist_ok=True)

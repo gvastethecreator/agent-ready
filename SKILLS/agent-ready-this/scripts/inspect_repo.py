@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import re
+import stat
 import subprocess
 from pathlib import Path
 from typing import Any, Iterable
@@ -177,8 +178,11 @@ def safe_json(path: Path) -> dict[str, Any] | None:
 def walk_files(root: Path) -> list[Path]:
     result: list[Path] = []
     for current, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
         base = Path(current)
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS
+                   and not (base / d).is_symlink()
+                   and not (os.name == "nt" and
+                            (base / d).lstat().st_reparse_tag == stat.IO_REPARSE_TAG_MOUNT_POINT)]
         for name in files:
             result.append(base / name)
             if len(result) >= MAX_FILES:
@@ -567,7 +571,8 @@ def main() -> int:
 
     warnings = [
         "Heuristic inventory only; verify high-impact findings in source files.",
-        "Scratch and prior assessment directories are excluded. Commands come from package scripts, root Makefile or "
+        "Scratch, prior assessment directories, directory symlinks and Windows junctions are excluded. "
+        "Commands come from package scripts, root Makefile or "
         "justfile targets, and Cargo, Go, or Python conventions; convention commands are unverified until run.",
         "The inspector does not execute commands, inspect secret values, or prove authorization behavior.",
     ]

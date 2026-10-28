@@ -50,6 +50,19 @@ class AssessmentPipelineTests(unittest.TestCase):
                     json.dumps({"dependencies": {"next": "1.0.0", "better-auth": "1.0.0"}}),
                     encoding="utf-8",
                 )
+            external = base / "external"
+            external.mkdir()
+            (external / "package.json").write_text(
+                json.dumps({"dependencies": {"next": "1.0.0", "better-auth": "1.0.0"}}),
+                encoding="utf-8",
+            )
+            linked = repo / "linked-owner"
+            if sys.platform == "win32":
+                # A junction is not a symlink to os.walk; prune it before descent.
+                subprocess.run(["cmd", "/c", "mklink", "/J", str(linked), str(external)],
+                               check=True, capture_output=True, text=True)
+            else:
+                linked.symlink_to(external, target_is_directory=True)
             grill = self.run_assessment(repo, out, "--target-vendor", "codex")
             audit = json.loads((out / "audit.json").read_text(encoding="utf-8"))
             self.assertEqual(len(audit["inventory"]["package_json"]["packages"]), 1)

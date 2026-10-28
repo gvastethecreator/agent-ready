@@ -17,6 +17,8 @@ Output, in a new directory outside the skill (existing directories are rejected)
 
 A failed stage leaves partial output; keep it for diagnosis and retry in a new directory. `--help` lists options. Runtime-intent flags describe assessment scope, not authorization. `--known-context` follows [known-context.schema.json](../schemas/known-context.schema.json) and only suppresses settled questions. `--grill-mode off` hides questions but keeps unresolved decisions. The default next round holds one question.
 
+`agent-ready.config.schema.json` describes a proposed configuration, not an implemented config loader. Helpers use CLI flags; schema defaults do not change their defaults. The adapter contract is also a design reference, not a generated or verified client-support matrix.
+
 ## What the inspector reads
 
 - Package scripts in every `package.json`, including scripts that run `tsc`, `vue-tsc`, `svelte-check`, or `astro check` as the typecheck gate.
@@ -25,7 +27,7 @@ A failed stage leaves partial output; keep it for diagnosis and retry in a new d
 - Instruction files by case-insensitive name, CI under `.github/workflows/` and other common pipeline files.
 - Server signals from web frameworks, API route paths, or server dependencies in manifests; public content only with a site generator.
 
-It skips scratch and prior `.agent-ready` output. It does not run project commands, read secret values, or prove authorization.
+It skips scratch, prior `.agent-ready` output, directory symlinks and Windows junctions. Inspect a linked package through its canonical owner separately. It does not run project commands, read secret values, or prove authorization.
 
 ## Separate stages
 

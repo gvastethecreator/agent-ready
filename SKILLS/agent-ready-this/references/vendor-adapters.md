@@ -33,23 +33,9 @@ Each adapter definition contains:
 5. Mark generated adapters and store their source hash in the manifest.
 6. Warn when two clients would load contradictory rules.
 
-## Initial support tiers
+## Evidence boundary
 
-### Tier 1
-
-- Codex/OpenAI
-- Claude Code
-- Cursor
-- GitHub Copilot
-- OpenCode
-
-### Tier 2
-
-- Windsurf/Devin Desktop
-- Cline
-- Kiro
-- Aider
-- additional clients registered through data, not conditionals scattered through code
+The inspector detects candidate client paths; it does not implement adapters or verify client support. Check the requested client's current official loading rules before applying this contract. Keep capability and version settings in that client's adapter instead of maintaining another shared support catalog.
 
 ## Separation of concerns
 
