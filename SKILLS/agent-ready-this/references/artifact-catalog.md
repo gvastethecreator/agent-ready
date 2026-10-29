@@ -83,5 +83,5 @@ MCP                      -> invoke capabilities outside the page
 MCP Apps / A2UI          -> render richer agent-facing UI
 A2A                      -> delegate tasks to an independent agent
 ARD                      -> discover which resource/protocol exists before invocation
-agent-ready-site         -> verify the deployed site from the outside
+HTTP and browser checks -> verify the deployed site from the outside
 ```

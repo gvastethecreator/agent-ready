@@ -24,7 +24,7 @@ Default allowlist `'self'`: top-level and same-origin frames may register. Cross
 A tool inherits the page's origin, storage, and network. It must not:
 
 - Return API keys, session tokens, CSRF secrets, or password fields.
-- Accept a credential from the model and store it. Credential design: `browser-secret-boundary-readiness`.
+- Accept a credential from the model and store it. Use the product's human-operated credential setup flow. Keep provider secrets in its secure store or server-side secret boundary; expose only the authorized domain action to the model. Never add keys to tool arguments, URLs, logs or results. If a requested client-held key has no established storage and access contract, resolve that product decision before adding it.
 - Bypass the product's authz checks. Execute the same server path the UI uses.
 - Perform money, delete, publish, or share without the existing human confirm step.
 

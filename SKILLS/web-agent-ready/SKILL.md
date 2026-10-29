@@ -9,14 +9,12 @@ Expose useful page actions to browser agents through the same logic and visible 
 
 ## Routing and scope
 
-- Repository guidance and coding-agent workflows: `agent-ready-this`, when available.
-- Whole-site readiness audit across crawlers, fetch, browser, and API agents: `agent-ready-site`, when available.
-- Public search and citation content: `ai-seo`.
-- Provider credentials or BYOK: `browser-secret-boundary-readiness`.
-- Missing labels, roles, or keyboard paths: `better-accessibility`.
+- Repository guidance, whole-site readiness audits, and public search strategy are separate scopes. This folder provides the in-page procedure without another skill.
+- Provider credentials or BYOK: follow the credential boundary in [security.md](references/security.md) and the product's existing secure setup flow.
+- Missing labels, roles, or keyboard paths: prefer native elements, visible labels and logical focus order; exercise the repaired human path alongside the tool call.
 - Jobs that must work without an open page: assess the existing backend API or MCP surface.
 
-For a mixed request, handle each authorized part with its owner. A routing decision does not end the user's broader task. An audit produces findings; an implementation request authorizes the scoped local changes.
+For a mixed request, handle each authorized part in the source component that owns it. A scope decision does not end the user's broader task. An audit produces findings; an implementation request authorizes the scoped local changes.
 
 WebMCP remains experimental. Before writing API code, read [webmcp.md](references/webmcp.md), check the target browser and current official documentation, and record the contract used. A draft signature is not proof of browser support. Feature detection preserves the existing human path; do not ship a fake platform API or retry mutations through guessed signatures.
 

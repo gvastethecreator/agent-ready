@@ -26,7 +26,7 @@ A denial, CAPTCHA or missing login authority ends that access path. Preserve it;
 - **C4 blockers.** Consent wall before content, modal without a named close, hover-only menus, drag-only or canvas-only controls, scroll-only loading without a "load more" control or page links, session timeouts inside a multi-step job, core steps in cross-origin iframes (payment iframes are expected). dom_probe: `open_dialogs`, `canvas_large`, `cross_origin_iframes`.
 - **C5 feedback.** Result counts, success, and error states appear as text, ideally in a live region; loading ends; disabled controls state why. dom_probe: `live_regions`.
 - **C6 consequential gates.** A review step exists, shows totals or recipients in text, and the final control is clearly named. The agent should reach it, not pass it. A missing gate is a human-safety finding, not an agent-friendliness gain.
-- **C7 in-page tools.** dom_probe records API/form markers only. They do not prove tool registration, authorization or execution. Consider the proposed WebMCP surface for a concrete repeated job and supported client; verify current browser/spec support. Implementation: `web-agent-ready`.
+- **C7 in-page tools.** dom_probe records API/form markers only. They do not prove tool registration, authorization or execution. Consider the proposed WebMCP surface for a concrete repeated job and supported client; verify current browser/spec support. For requested implementation, register tools only while the owning view and access are active, use the existing domain action, validate arguments and server permissions, preserve required confirmation, then observe discovery, execution, cleanup and the human path.
 
 ## Outcomes
 

@@ -13,10 +13,10 @@ Audit a live website or web app the way agents meet it: over HTTP, in a browser,
 ## Scope and authority
 
 - `audit` (default): read-only findings and a ranked fix plan.
-- `audit and fix`: also apply clear local fixes in the site's source when the repo is available: robots rules, headers, link tags, labels, server rendering of key facts. Interface builds go to their owners.
+- `audit and fix`: also apply clear local fixes in the site's source when the repo is available: robots rules, headers, link tags, labels, server rendering of key facts. Larger interface builds need explicit implementation scope.
 - Traffic: the probe sends bounded GET requests only. In the browser, navigate and fill test inputs; stop before any consequential action. Sign in only with a test account on the user's own app. For third-party sites, audit public pages with the default budget.
 - CDN, WAF, and DNS dashboard changes need their own authority, even in `audit and fix`.
-- Owners, loaded only for requested work: coding-agent guidance and interface builds (llms.txt, OpenAPI, MCP) → `agent-ready-this`; in-page WebMCP tools → `web-agent-ready`; accessibility repair depth → `better-accessibility`; AI citation strategy → `ai-seo`; classic SEO → `seo-audit`; launch hygiene → `site-go-live`.
+- No other skill is required for this audit or its scoped fixes. Assign findings to the source component or team that owns them. For separately requested interface builds, use the project's existing API, page and authorization contracts and current official platform documentation. Search strategy and launch work stay outside this audit unless requested.
 
 ## Agent classes
 

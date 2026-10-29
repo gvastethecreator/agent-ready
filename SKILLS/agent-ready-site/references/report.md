@@ -23,7 +23,7 @@ Limits: <evidence not collected and why>.
 - Blocks: <jobs × classes>
 - Evidence (<level>): <observation, file, field>
 - Fix: <change>
-- Owner: <this skill | agent-ready-this | web-agent-ready | better-accessibility | CDN config | ...>
+- Owner: <source component, responsible team, or CDN configuration owner>
 - Accept when: <check that proves the fix>
 
 ## Layer checks

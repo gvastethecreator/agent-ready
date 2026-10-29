@@ -24,7 +24,7 @@ Use the request to select the mode:
 
 When intent is unclear, use `assess`. A request to audit **and fix** authorizes the clear local fixes; show the material decision and continue. Ask only for missing information or authority that changes the proposed work. Reuse prior consent. Publishing, remote tracker changes, and consequential external actions need their own authority.
 
-This skill owns project readiness and interface selection. Use `agent-ready-site`, when available, to audit the live site or app from outside; `web-agent-ready` for implementation of tools in an open page; `experience-design` for human understanding and control; `brainstormer` for new product capabilities. Load only the missing capability.
+This skill owns project readiness and interface selection. Its bundled references and scripts support the workflow without another skill. Keep live-site audits, human research and new product discovery within their requested scope. For an authorized interface build, use the existing domain operation, enforce its access and side-effect rules, and verify discovery and execution with the actual consumer.
 
 ## Process
 
@@ -60,7 +60,7 @@ Ask one question at a time by default, with evidence and a recommendation. An un
 
 ### 4. Plan or implement within scope
 
-For substantial work, reuse the project's durable task record. Apply `simple-english` before drafting task or plan text, preserving commands and identifiers. State file operations and acceptance checks; avoid a manifest for a small patch unless an existing workflow requires it.
+For substantial work, reuse the project's durable task record. Write concrete actions in the artifact's language with short sentences and consistent terms; preserve commands, paths, identifiers and uncertainty. State file operations and acceptance checks; avoid a manifest for a small patch unless an existing workflow requires it.
 
 In an apply mode, make the smallest coherent change. Direct edits to human-owned files are allowed within the user's requested scope; preserve unrelated content. Read [managed-files-policy.md](references/managed-files-policy.md) when introducing generated content or refresh ownership.
 
@@ -70,7 +70,7 @@ For runtime work, read [security-model.md](references/security-model.md). Define
 
 ### 5. Verify and hand back
 
-At the final boundary, run the smallest applicable project checks. For changed interfaces, cover an authorized call and the relevant rejection or failure path. Use existing coverage first. Observe live discovery, execution, UI state, and cleanup when a page tool's behavior cannot be proved at a lower layer. For a deployed public site, check live agent access and reads with `agent-ready-site`, when available.
+At the final boundary, run the smallest applicable project checks. For changed interfaces, cover an authorized call and the relevant rejection or failure path. Use existing coverage first. Observe live discovery, execution, UI state, and cleanup when a page tool's behavior cannot be proved at a lower layer. For a deployed public site, fetch the changed public URLs as the intended consumer, check status and content type, and confirm that required facts and discovery links are present in the representation it reads. Use a browser for rendered or interactive claims.
 
 Use [validation-rubric.md](references/validation-rubric.md) to separate structural, functional, and agent evidence. Report changed files, checks and results, skipped checks with reasons, unresolved decisions, and any limits on readiness. A score or generated receipt cannot replace missing proof.
 
