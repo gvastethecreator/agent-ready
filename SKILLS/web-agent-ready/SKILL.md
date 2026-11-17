@@ -25,7 +25,7 @@ WebMCP remains experimental. Before writing API code, read [webmcp.md](reference
    **Done:** each proposed tool has a job, owning view, valid state, caller, and side-effect boundary.
 
 2. **Choose the smallest interface.**
-   For an existing native form, read [declarative.md](references/declarative.md). For other page actions, use imperative registration. Keep one primary tool per operation; complementary filters and submission can be separate jobs.
+   For an existing native form, read [declarative.md](references/declarative.md). For other page actions, use imperative registration. Keep one primary tool per operation; complementary filters and submission can be separate jobs. Every registered tool costs the agent context; Chrome's Lighthouse audit warns above 40 tools on one page.
    **Done:** tool names, inputs, outputs, and ownership are clear, with no duplicate operation under another name.
 
 3. **Implement through existing product logic.**

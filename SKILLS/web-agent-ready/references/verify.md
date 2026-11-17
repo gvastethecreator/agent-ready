@@ -24,6 +24,8 @@ Unregistration and in-flight cancellation require separate observations. An abor
 
 Use the current browser's verified `getTools`/`executeTool` contract from [webmcp.md](webmcp.md). An available inspector extension can help; it is not a required dependency.
 
+Lighthouse has an informational "Registered WebMCP tools" audit that lists the tools registered on the page through either API and warns when more than 40 are registered. It is discovery evidence only: it neither executes a tool nor passes or fails the page. Its page did not state a category id or minimum version when reviewed on 2026-11-17; check the installed Lighthouse before relying on it.
+
 ## Existing automated coverage
 
 Extend existing tests only for uncovered changed behavior: missing platform methods, route/auth lifecycle, stale completion, invalid input, bounded errors, or consequential-action enforcement. A mock belongs only in tests and must match the chosen contract. Schema serialization alone does not validate the input domain.
